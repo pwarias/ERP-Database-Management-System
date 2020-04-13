@@ -10,7 +10,7 @@ def mainMenu():
       password = input("Please enter your password: ") #very safe and secure xd
       
       #call one of the following menus after verifying login info
-      #todo by przemek
+      #call permisionCheck() to then call correspodning menu
 
 
 def admin_menu():
