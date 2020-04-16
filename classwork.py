@@ -54,15 +54,15 @@ class Connection:
         ln = input("Enter Last Name: ")
         self.cursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (fn,ln,))
         return
-    def updateCustomer():
+    def updateCustomer(self):
         return
-    def viewCustomers():
+    def viewCustomers(self):
         return
 
     #Model function calls
     def newModel(self,modelNumber,itemCost,orderNumber):
         return
-    def updateModel()
+    def updateModel(self):
         return
 
     #Design function calls
@@ -103,19 +103,19 @@ class Connection:
         return
     
     #Inventory function calls
-    def addModel():
+    def addModel(self):
         return
-    def deleteModel():
+    def deleteModel(self):
         return
-    def viewInventory():
+    def viewInventory(self):
         return
 
     #Orger function calls
-    def createOrder():
+    def createOrder(self):
         return
-    def updateOrder():
+    def updateOrder(self):
         return
-    def viewOrders():
+    def viewOrders(self):
         return
 
     
