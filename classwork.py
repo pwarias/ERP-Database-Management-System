@@ -37,14 +37,47 @@ class Connection:
         Pasword = input("Enter a password: ")
         confPassword = input("Confirm the password")
         if Pasword == confPassword:
-            self.cursor.execute("Create user %s with password %s", (usrName,Pasword))
-            userType = input("What type user is this user: ")
-            self.cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
-            print("New User has been added")
+            try:
+                self.cursor.execute("Create user %s with password %s", (usrName,Pasword))
+                userType = input("What type user is this user: ")
+                self.cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
+                print("New User has been added")
+            except(Exception,psycopg2.Error) as error:
+                if error == 42710:
+                    print("User already exist, try a new username")
+                    self.newUser()
+                else:
+                    print("Error %d occured", error)
+
         else:
             self.newUser()
         return
     def updateUser(self):
+        usrName = input("Enter a username you want to update: ")
+        newPasword = input("Enter a password: ")
+        confnewPassword = input("Confirm the password")
+        if newPasword == confnewPassword:
+            try:
+                self.cursor.execute("Alter user %s with password %s", (usrName,newPasword))
+                userType = input("What type user is this user: ")
+                self.cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
+                print("New User has been added")
+            except(Exception,psycopg2.Error) as error:
+                if error == 42704:
+                    print("User does not exit")
+                    another_new = input("Would you like to try another username or create a new username \n Options: \n1: Try again \n2: New User")
+                    if another_new == 1:
+                        self.conn.updateUser(self)
+                    elif another_new == 2:
+                        self.conn.newUser(self)
+                    else:
+                        return -1
+                else:
+                    print("Error %d occured", error)
+                return -1    
+        else:
+            print("Password did not match")
+            self.updateUser()
         return
 
     #Customers function calls
