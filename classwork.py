@@ -55,8 +55,8 @@ class Connection:
         if newPasword == confnewPassword:
             try:
                 self.cursor.execute("Alter user %s with password %s", (usrName,newPasword))
-                userType = input("What type user is this user: ")
-                self.cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
+                userType = input("What type of user is this user: ")
+                self.cursor.execute("Grant %s privileges on database %s to %s", (userType,self.conn.database,usrName))
                 print("New User has been added")
             except(Exception,psycopg2.Error) as error:
                 if error == 42704:
@@ -91,7 +91,7 @@ class Connection:
     #Model function calls
     def newModel(self,modelNumber,itemCost,orderNumber):
         return
-    def updateModel(self):
+    def updateModel(self): 
         return
 
     #Design function calls
@@ -125,6 +125,9 @@ class Connection:
         self.cursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
         return
 
+    def employeeInfo(self): #Engineers have limited view of emplyee info like name, title, etc.
+        return
+
     #Report function calls
     def createReport(self):
         return
@@ -132,8 +135,7 @@ class Connection:
         return
     
     #Inventory function calls
-    def addModel(self):
-        return
+    #there is newModel() no need for addModel()
     def deleteModel(self):
         return
     def viewInventory(self):
@@ -147,6 +149,12 @@ class Connection:
     def viewOrders(self):
         return
 
+
+    def newTable(self):
+        return
+    def updateTable(self):
+        return
+    
     
 try:
     conTest = Connection()

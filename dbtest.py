@@ -1,16 +1,42 @@
-import psycopg2
-def test():
-      permissionCheck()
+import psycopg2;
+from classwork import *;
 
 def mainMenu():
       #we could also query db for the users role and display options based on that?
-      print("Main Menu")
+      no_connection = True
+      print("Welcome to the ERP DBMS! \n Main Menu \n")
       username = input("Please enter your username: ")
       print("\n")
-      password = input("Please enter your password: ") #very safe and secure xd
+      passwrd = input("Please enter your password: ") #very safe and secure xd
+
+      conn = classwork.loginIn(username, passwrd)
+
+      '''
+      while no_connection == True:
+            username = input("Please enter your username: ")
+            print("\n")
+            passwrd = input("Please enter your password: ") #very safe and secure xd
+            
+            try:      
+                  conn = psycopg2.connect(database="postgres", user = username, password = passwrd, host = "localhost", port = "5432")
+                  no_connection = False
+            except:
+                  print("Could not connect to databse, please try again.")
+                  no_connection = True
+      '''
       
-      #call one of the following menus after verifying login info
-      #call permisionCheck() to then call correspodning menu
+      role = roleCheck(conn)
+
+      if role == "admins":
+            admin_menu()
+      elif role == "engineer":
+            engineer_menu()
+      elif role == "sales":
+            sales_menu()
+      elif role == "hr":
+            hr_menu()
+      else:
+           print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
 
 
 def admin_menu():
@@ -26,12 +52,10 @@ def admin_menu():
                         option1 = input("1. Create user \n 2. Update user \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for user specifics
-                              #call function to create user
+                              classwork.newUser()
                         elif option1 == 2: #this is also for granting access to other users
                               valid_input1 == True
-                              #prompt user for specifics
-                              #call function to update user
+                              classwork.updateUser()
                         else:
                               print("Please choose a valid option \n")
             elif option == 2:
@@ -41,12 +65,10 @@ def admin_menu():
                         option1 = input("1. Create table \n 2. Update table \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for table specifics
-                              #call function to create table
+                              classwork.newTable()
                         elif option1 == 2:
                               valid_input1 == True
-                              #prompt user for specifics
-                              #call function to update table
+                              classwork.updateTable()
                         else:
                               print("Please choose a valid option \n")
             elif option == 3:
@@ -56,12 +78,10 @@ def admin_menu():
                         option1 = input("1. Create report \n 2. View report \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for report specifics
-                              #call function to create report
+                              classwork.createReport()
                         elif option1 == 2:
                               valid_input1 == True
-                              #prompt user for specifics
-                              #call function to view report
+                              classwork.viewReport()
                         else:
                               print("Please choose a valid option \n")
             else:
@@ -80,15 +100,13 @@ def engineer_menu():
                         option1 = input("1. Create model \n 2. View models \n 3. Update model \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for model specifics
-                              #call function to create model
+                              classwork.newDesign()
                         elif option1 == 2:
                               valid_input1 = True
-                              #call function to view Model table
+                              classwork.viewInventory()
                         elif option1 == 3:
                               valid_input1 = True
-                              #Prompt user what they want to change
-                              #call function to update Model
+                              classwork.updateModel()
                         else:
                               print("Please choose a valid option \n")
             elif option == 2:
@@ -98,20 +116,18 @@ def engineer_menu():
                         option1 = input("1. Add model to inventory \n 2. Delete model from inventory \n 3. View inventory \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for model to add
-                              #call function to add model to inventory
+                              classwork.newModel()
                         elif option1 == 2:
                               valid_input1 == True
-                              #prompt user for model to delete
-                              #call function to delete model from inventory
+                              classwork.deleteModel()
                         elif option1 == 3:
                               valid_input1 = True
-                              #call function to view inventory table
+                              classwork.viewInventory()
                         else:
                               print("Please choose a valid option \n")
             elif option == 3:
                   valid_input = True
-                  #call function to view employee information
+                  classwork.employeeInfo()
             else:
                   print("Please choose a valid menu: \n")
 
@@ -128,15 +144,13 @@ def sales_menu():
                         option1 = input("1. Create customer \n 2. Update customer \n 3. View Customers \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for customer specifics
-                              #call function to create customer
+                              classwork.newCustomer()
                         elif option1 == 2:
                               valid_input1 = True
-                              #prompt user for customer specifics
-                              #call function to update customer
+                              classwork.updateCustomer()
                         elif option1 == 3:
                               valid_input1 = True
-                              #call function to view customer table
+                              classwork.viewCustomers()
                         else:
                               print("Please choose a valid option \n")
             elif option == 2:
@@ -146,20 +160,18 @@ def sales_menu():
                         option1 = input("1. Create order \n 2. Update order \n 3. View Orders \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for order specifics
-                              #call function to create order
+                              classwork.createOrder()
                         elif option1 == 2:
                               valid_input1 == True
-                              #prompt user for order specifics
-                              #call function to update order
+                              classwork.updateOrder()
                         elif option1 == 3:
                               valid_input1 = True
-                              #call function to view order table
+                              classwork.viewOrders()
                         else:
                               print("Please choose a valid option \n")
             elif option == 3:
                   valid_input = True
-                  #call function to view reports
+                  classwork.viewReport()
             else:
                   print("Please choose a valid menu: \n")
 
@@ -176,51 +188,20 @@ def hr_menu():
                         option1 = input("1. Update employee \n 2. View employees \n") #prompt user for option
                         if option1 == 1:
                               valid_input1 = True
-                              #prompt user for employee specifics
-                              #call function to update employee
+                              classwork.updateUser()
                         elif option1 == 2:
                               valid_input1 = True
-                              #call function to view employee table
+                              classwork.viewUsers()
                         else:
                               print("Please choose a valid option \n")
             elif option == 2:
                   valid_input = True
                   #idk
             else:
-                  print("Please choose a valid menu: \n")
-                  
-def main():
-      username=input("welcome to our web app to connect to the database please enter a username: ")
-      password=input("please enter your password: ")
-
-      try:
-            conn = psycopg2.connect(database="test", user = username, password = password, host = "localhost", port = "5432")
-      except:
-            print("could not connect")
-            exit()
+                  print("Please choose a valid menu: \n")              
 
 
-      print("Opened database successfully")
-      mainMenu()
-      cur = conn.cursor()
-      '''
-      cur.execute(CREATE TABLE COMPANY
-            (ID INT PRIMARY KEY     NOT NULL,
-            NAME           TEXT    NOT NULL,
-            AGE            INT     NOT NULL,
-            ADDRESS        CHAR(50),
-            SALARY         REAL);) add triple quotes
-      print("Table created successfully")
-      '''
-
-      conn.commit()
-      conn.close()
-
-
-
-
-def permissionCheck():
-      conn = psycopg2.connect(database="postgres", user = "postgres", password = "Yaysql37", host = "localhost", port = "5432")
+def roleCheck(psycopg2 conn):
       cur = conn.cursor()
       cur.execute('''SELECT current_user;''')
       rows=cur.fetchall()
@@ -232,13 +213,11 @@ def permissionCheck():
       roleType=[]
       for i in range(len(rows)-1):
             roleType.append(''.join(rows[i]))
-      print(roleType) #all roles including inherited types, excludes name
+      #print(roleType) all roles including inherited types, excludes name
 
       #assume that emplyees can't have more than one role (not including inherited)
-      print(roleType[len(roleType)-1]) #the last role will contain the actual role of the user
+      return roleType[len(roleType)-1] #the last role will contain the actual role of the user
 
 
       conn.commit()
       conn.close()
-
-test()
