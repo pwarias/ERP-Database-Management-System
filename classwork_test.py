@@ -1,5 +1,8 @@
 import classwork
+import psycopg2
 
 hello = classwork.Connection()
-hello.loginIn()
-hello.loginOut()
+print("after hello hello")
+conn = hello.loginIn('postges','Yaysql37')
+hello.loginOut(conn)
+exit(0)

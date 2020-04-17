@@ -3,9 +3,8 @@ import sys
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8080"
+        self.port = "8081"
         self.database = "postgres"
-        return
 
     #Login/out function calls
     def loginIn(self,usrName,Pasword):
@@ -15,17 +14,18 @@ class Connection:
                                         host = self.host,
                                         port = self.port,
                                         database = self.database)
+            print("after connecting")
             return conn
         except(Exception, psycopg2.Error) as error:
             print ("Error while connecting to PostgreSQL", error)
             return
     
-     def loginOut(self,cursor,conn):
-        if(conn):
-            cursor.close()
-            conn.close()
-            print("PostgeSQL connection is closed")
-            return
+    def loginOut(self,conn):
+        print("Hello!!")
+        conn.close()
+        print("PostgeSQL connection is closed")
+        return
+
 
     #User function calls
     def newUser(self,cursor):
