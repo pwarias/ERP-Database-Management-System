@@ -21,7 +21,7 @@ class Connection:
             print ("Error while connecting to PostgreSQL", error)
             return
     
-     def loginOut(self,cursor,conn):
+    def loginOut(self,cursor,conn):
         if(conn):
             cursor.close()
             conn.close()
