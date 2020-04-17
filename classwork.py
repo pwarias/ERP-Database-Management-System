@@ -35,9 +35,9 @@ class Connection:
         confPassword = input("Confirm the password")
         if Pasword == confPassword:
             try:
-                cursor.execute("Create user %s with password %s", (usrName,Pasword))
+                myCursor.execute("Create user %s with password %s", (usrName,Pasword))
                 userType = input("What type user is this user: ")
-                cursor.execute("Grant %s privelages on database %s to %s", (userType,self.database,usrName))
+                myCursor.execute("Grant %s privelages on database %s to %s", (userType,self.database,usrName))
                 print("New User has been added")
             except(Exception,psycopg2.Error) as error:
                 if error == 42710: #User does not exist 
@@ -110,14 +110,14 @@ class Connection:
             try:
                 checkModNum = self.cursor.execute("Select modelNumber from model where modelNumber=%s", modelNumber)
                 print("Please try another model number")
-                self.newDesign(self)
+                newDesign(self,employeeID,conn)
             except(Exception, psycopg2.Error) as error:
                 if error == '02':
                     itemCost = input("Enter the items cost: ")
-                    self.cursor.execute("Insert into model (employeeif,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                    myCursor.execute("Insert into model (employeeif,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
                     return
                 else:
-                    self.newDesign(employeeID)
+                    newDesign(self,employeeID,conn)
         else:
             return
 
