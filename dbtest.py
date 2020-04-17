@@ -1,4 +1,5 @@
 import psycopg2
+import classwork
 def test():
       permissionCheck()
 
@@ -11,6 +12,9 @@ def mainMenu():
       
       #call one of the following menus after verifying login info
       #call permisionCheck() to then call correspodning menu
+      creatingCon=classwork.Connection()
+      conn=creatingCon.loginIn(username, password)
+
 
 
 def admin_menu():
