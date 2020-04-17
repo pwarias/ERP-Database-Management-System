@@ -2,48 +2,45 @@ import psycopg2
 import sys
 class Connection:
     def __init__(self):
+        self.host = "127.0.0.1"
+        self.port = "8080"
+        self.database = "postgres"
+        return
+
+    #Login/out function calls
+    def loginIn(self,usrName,Pasword):
         try:
-            self.conn = psycopg2.connect(user = "postgres",
-                                        password = "Yaysql37",
-                                        host = "127.0.0.1",
-                                        port = "8080",
-                                        database = "cs425db")
-            self.cursor = self.conn.cursor()
+            conn = psycopg2.connect(user = usrName,
+                                        password = Pasword,
+                                        host = self.host,
+                                        port = self.port,
+                                        database = self.database)
+            cursor = conn.cursor()
+            return conn
         except(Exception, psycopg2.Error) as error:
             print ("Error while connecting to PostgreSQL", error)
-    def closeConnection(self):
-        if(self.conn):
-            self.cursor.close()
-            self.conn.close()
+            return
+    
+     def loginOut(self,cursor,conn):
+        if(conn):
+            cursor.close()
+            conn.close()
             print("PostgeSQL connection is closed")
             return
 
-    #Login/out function calls
-    def loginIn(self, usrName,Pasword):
-        try:
-            self.conn = psycopg2.connect(user = usrName,
-                                        password = Pasword,
-                                        host = "127.0.0.1",
-                                        port = "8080",
-                                        database = "cs425db")
-            self.cursor = self.conn.cursor()
-        except(Exception, psycopg2.Error) as error:
-            print ("Error while connecting to PostgreSQL", error)
-            return
-
     #User function calls
-    def newUser(self):
+    def newUser(self,cursor):
         usrName = input("Enter a username: ")
         Pasword = input("Enter a password: ")
         confPassword = input("Confirm the password")
         if Pasword == confPassword:
             try:
-                self.cursor.execute("Create user %s with password %s", (usrName,Pasword))
+                cursor.execute("Create user %s with password %s", (usrName,Pasword))
                 userType = input("What type user is this user: ")
-                self.cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
+                cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
                 print("New User has been added")
             except(Exception,psycopg2.Error) as error:
-                if error == 42710:
+                if error == 42710: #User does not exist 
                     print("User already exist, try a new username")
                     self.newUser()
                 else:
