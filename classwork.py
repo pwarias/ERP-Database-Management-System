@@ -15,7 +15,6 @@ class Connection:
                                         host = self.host,
                                         port = self.port,
                                         database = self.database)
-            cursor = conn.cursor()
             return conn
         except(Exception, psycopg2.Error) as error:
             print ("Error while connecting to PostgreSQL", error)
