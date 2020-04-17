@@ -29,6 +29,7 @@ class Connection:
 
     #User function calls
     def newUser(self,conn):
+        myCursor = conn.cursor()
         usrName = input("Enter a username: ")
         Pasword = input("Enter a password: ")
         confPassword = input("Confirm the password")
@@ -84,19 +85,24 @@ class Connection:
         ln = input("Enter Last Name: ")
         myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (fn,ln,))
         return
-    def updateCustomer(self):
+    def updateCustomer(self,conn):
+        myCursor = conn.cursor()
         return
-    def viewCustomers(self):
+    def viewCustomers(self,conn):
+        myCursor = conn.cursor()
         return
 
     #Model function calls
     def newModel(self,modelNumber,itemCost,orderNumber,conn):
+        myCursor = conn.cursor()
         return
-    def updateModel(self): 
+    def updateModel(self,conn): 
+        myCursor = conn.cursor()
         return
 
     #Design function calls
     def newDesign(self,employeeID,conn):
+        myCursor = conn.cursor()
         checkempID = self.cursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
         employeeID = input("Enter your employee ID: ")
         if employeeID == checkempID:
@@ -117,6 +123,7 @@ class Connection:
 
     #Employee function calls
     def newEmployee(self,conn):
+        myCursor = conn.cursor()
         employeeid = input("Enter the Employees ID: ")
         firstname = input("Enter the Employees first mame: ")
         lastname = input("Enter the Employees last name: ")
@@ -126,42 +133,42 @@ class Connection:
         self.cursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
         return
 
-    def employeeInfo(self): #Engineers have limited view of emplyee info like name, title, etc.
+    def employeeInfo(self,conn): #Engineers have limited view of emplyee info like name, title, etc.
+        myCursor = conn.cursor()
         return
 
     #Report function calls
     def createReport(self,conn):
+        myCursor = conn.cursor()
         return
     def viewReport(self,conn):
+        myCursor = conn.cursor()
         return
     
     #Inventory function calls
     #there is newModel() no need for addModel()
-    def deleteModel(self):
+    def deleteModel(self,conn):
+        myCursor = conn.cursor()
         return
     def viewInventory(self,conn):
+        myCursor = conn.cursor()
         return
 
     #Orger function calls
     def createOrder(self,conn):
+        myCursor = conn.cursor()
         return
     def updateOrder(self,conn):
+        myCursor = conn.cursor()
         return
-    def viewOrders(self):
+    def viewOrders(self,conn):
+        myCursor = conn.cursor()
         return
 
 
-    def newTable(self):
+    def newTable(self,conn):
+        myCursor = conn.cursor()
         return
-    def updateTable(self):
+    def updateTable(self,conn):
+        myCursor = conn.cursor()
         return
-    
-    
-try:
-    conTest = Connection()
-
-finally:
-    if(conTest):
-        conTest.cursor.close()
-        conTest.conn.close()
-        print("PostgeSQL connection is closed")
