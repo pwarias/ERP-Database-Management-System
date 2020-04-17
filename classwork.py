@@ -10,10 +10,10 @@ class Connection:
     def loginIn(self,usrName,Pasword):
         try:
             conn = psycopg2.connect(user = usrName,
-                                        password = Pasword,
-                                        host = self.host,
-                                        port = self.port,
-                                        database = self.database)
+                                    password = Pasword,
+                                    host = self.host,
+                                    port = self.port,
+                                    database = self.database)
             print("after connecting")
             return conn
         except(Exception, psycopg2.Error) as error:
@@ -28,7 +28,7 @@ class Connection:
 
 
     #User function calls
-    def newUser(self,cursor):
+    def newUser(self,conn):
         usrName = input("Enter a username: ")
         Pasword = input("Enter a password: ")
         confPassword = input("Confirm the password")
@@ -36,36 +36,37 @@ class Connection:
             try:
                 cursor.execute("Create user %s with password %s", (usrName,Pasword))
                 userType = input("What type user is this user: ")
-                cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
+                cursor.execute("Grant %s privelages on database %s to %s", (userType,self.database,usrName))
                 print("New User has been added")
             except(Exception,psycopg2.Error) as error:
                 if error == 42710: #User does not exist 
                     print("User already exist, try a new username")
-                    self.newUser()
+                    newUser(conn)
                 else:
                     print("Error %d occured", error)
 
         else:
             self.newUser()
         return
-    def updateUser(self):
+    def updateUser(self,conn):
+        myCursor = conn.cursor()
         usrName = input("Enter a username you want to update: ")
         newPasword = input("Enter a password: ")
         confnewPassword = input("Confirm the password")
         if newPasword == confnewPassword:
             try:
-                self.cursor.execute("Alter user %s with password %s", (usrName,newPasword))
+                myCursor.execute("Alter user %s with password %s", (usrName,newPasword))
                 userType = input("What type user is this user: ")
-                self.cursor.execute("Grant %s privelages on database %s to %s", (userType,self.conn.database,usrName))
+                myCursor.execute("Grant %s privelages on database %s to %s", (userType,self.database,usrName))
                 print("New User has been added")
             except(Exception,psycopg2.Error) as error:
                 if error == 42704:
                     print("User does not exit")
                     another_new = input("Would you like to try another username or create a new username \n Options: \n1: Try again \n2: New User")
                     if another_new == 1:
-                        self.conn.updateUser(self)
+                        updateUser(self,conn)
                     elif another_new == 2:
-                        self.conn.newUser(self)
+                        newUser(self,conn)
                     else:
                         return -1
                 else:
@@ -73,15 +74,15 @@ class Connection:
                 return -1    
         else:
             print("Password did not match")
-            self.updateUser()
+            updateUser(self,conn)
         return
 
     #Customers function calls
-    def newCustomer(self):
-
+    def newCustomer(self,conn):
+        myCursor = conn.cursor()
         fn = input("Enter First Name: ")
         ln = input("Enter Last Name: ")
-        self.cursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (fn,ln,))
+        myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (fn,ln,))
         return
     def updateCustomer(self):
         return
@@ -89,13 +90,13 @@ class Connection:
         return
 
     #Model function calls
-    def newModel(self,modelNumber,itemCost,orderNumber):
+    def newModel(self,modelNumber,itemCost,orderNumber,conn):
         return
     def updateModel(self):
         return
 
     #Design function calls
-    def newDesign(self,employeeID):
+    def newDesign(self,employeeID,conn):
         checkempID = self.cursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
         employeeID = input("Enter your employee ID: ")
         if employeeID == checkempID:
@@ -115,7 +116,7 @@ class Connection:
             return
 
     #Employee function calls
-    def newEmployee(self):
+    def newEmployee(self,conn):
         employeeid = input("Enter the Employees ID: ")
         firstname = input("Enter the Employees first mame: ")
         lastname = input("Enter the Employees last name: ")
@@ -126,23 +127,23 @@ class Connection:
         return
 
     #Report function calls
-    def createReport(self):
+    def createReport(self,conn):
         return
-    def viewReport(self):
+    def viewReport(self,conn):
         return
     
     #Inventory function calls
-    def addModel(self):
+    def addModel(self,conn):
         return
-    def deleteModel(self):
+    def deleteModel(self,conn):
         return
-    def viewInventory(self):
+    def viewInventory(self,conn):
         return
 
     #Orger function calls
-    def createOrder(self):
+    def createOrder(self,conn):
         return
-    def updateOrder(self):
+    def updateOrder(self,conn):
         return
-    def viewOrders(self):
+    def viewOrders(self,conn):
         return
