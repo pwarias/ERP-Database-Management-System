@@ -4,7 +4,7 @@ from psycopg2.extensions import AsIs
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "5432"
+        self.port = "8080"
         self.database = "postgres"
         self.cIdCounter = 0
 
