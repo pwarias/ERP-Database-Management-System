@@ -40,7 +40,7 @@ class Connection:
                 try:
                     myCursor.execute("Create user %s with password %s", (AsIs(usrName),Pasword))
                     userType = input("What type user is this user: ")
-                    myCursor.execute("Grant %s privileges on database %s to %s", (userType,self.database,usrName))
+                    myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                     print("New User has been added")
                     invalid=False
                 except(Exception,psycopg2.Error) as error:
@@ -86,8 +86,8 @@ class Connection:
         myCursor = conn.cursor()
         fName = input("Enter First Name: ")
         lName = input("\nEnter Last Name: ")
-        cId = customerIdCounter() 
-        myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+        #cId = customerIdCounter() 
+        #SmyCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
         return
     def updateCustomer(self,conn): #still needs validation of customerId
         myCursor = conn.cursor()
