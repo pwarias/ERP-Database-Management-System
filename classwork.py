@@ -38,7 +38,7 @@ class Connection:
             confPassword = input("Confirm the password: ")
             if Pasword == confPassword:
                 try:
-                    myCursor.execute("Create user %s with password %s", (AsIs(usrName),Pasword))
+                    myCursor.execute(sql.SQL("Create user {} with password {}").format(sql.Identifier(usrName,Pasword)))
                     userType = input("What type user is this user: ")
                     myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                     print("New User has been added")
