@@ -1,9 +1,5 @@
 import psycopg2
 import classwork
-def test():
-      permissionCheck()
-import psycopg2;
-from classwork import *;
 
 def mainMenu():
       #we could also query db for the users role and display options based on that?
@@ -13,8 +9,7 @@ def mainMenu():
       print("\n")
       passwrd = input("Please enter your password: ") #very safe and secure xd
 
-      conn = classwork.loginIn(username, passwrd)
-
+      
       '''
       while no_connection == True:
             username = input("Please enter your username: ")
@@ -31,186 +26,186 @@ def mainMenu():
       
       #call one of the following menus after verifying login info
       #call permisionCheck() to then call correspodning menu
-      creatingCon=classwork.Connection()
-      conn=creatingCon.loginIn(username, password)
+      classConnect=classwork.Connection()
+      conn=classConnect.loginIn(username, passwrd)
 
       role = roleCheck(conn)
 
       if role == "admins":
-            admin_menu()
+            admin_menu(classConnect, conn)
       elif role == "engineer":
-            engineer_menu()
+            engineer_menu(classConnect, conn)
       elif role == "sales":
-            sales_menu()
+            sales_menu(classConnect, conn)
       elif role == "hr":
-            hr_menu()
+            hr_menu(classConnect, conn)
       else:
            print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
 
 
-def admin_menu():
+def admin_menu(classConnect, conn):
       valid_input = False
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
-            option = input("1. Users \n 2. Tables \n 3. Reports \n") #prompt user for option
-            if option == 1:
+            option = input("1. Users \n2. Tables \n3. Reports \n:") #prompt user for option
+            if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Create user \n 2. Update user \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.newUser()
-                        elif option1 == 2: #this is also for granting access to other users
+                              classConnect.newUser(conn)
+                        elif option1 == "2": #this is also for granting access to other users
                               valid_input1 == True
-                              classwork.updateUser()
+                              classConnect.updateUser(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 2:
+            elif option == "2":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Create table \n 2. Update table \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.newTable()
-                        elif option1 == 2:
+                              classConnect.newTable(conn)
+                        elif option1 == "2":
                               valid_input1 == True
-                              classwork.updateTable()
+                              classConnect.updateTable(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 3:
+            elif option == "3":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Create report \n 2. View report \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.createReport()
-                        elif option1 == 2:
+                              classConnect.createReport(conn)
+                        elif option1 == "2":
                               valid_input1 == True
-                              classwork.viewReport()
+                              classConnect.viewReport(conn)
                         else:
                               print("Please choose a valid option \n")
             else:
                   print("Please choose a valid menu: \n")
 
-def engineer_menu():
+def engineer_menu(classConnect, conn):
       valid_input = False
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
             option = input("1. Models \n 2. Inventory \n 3. Employee Infromation \n") #prompt user for option
-            if option == 1:
+            if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Create model \n 2. View models \n 3. Update model \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.newDesign()
-                        elif option1 == 2:
+                              classConnect.newDesign(conn)
+                        elif option1 == "2":
                               valid_input1 = True
-                              classwork.viewInventory()
-                        elif option1 == 3:
+                              classConnect.viewInventory(conn)
+                        elif option1 == "3":
                               valid_input1 = True
-                              classwork.updateModel()
+                              classConnect.updateModel(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 2:
+            elif option == "2":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Add model to inventory \n 2. Delete model from inventory \n 3. View inventory \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.newModel()
-                        elif option1 == 2:
+                              classConnect.newModel(conn)
+                        elif option1 == "2":
                               valid_input1 == True
-                              classwork.deleteModel()
-                        elif option1 == 3:
+                              classConnect.deleteModel(conn)
+                        elif option1 == "3":
                               valid_input1 = True
-                              classwork.viewInventory()
+                              classConnect.viewInventory(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 3:
+            elif option == "3":
                   valid_input = True
-                  classwork.employeeInfo()
+                  classConnect.employeeInfo(conn)
             else:
                   print("Please choose a valid menu: \n")
 
-def sales_menu():
+def sales_menu(classConnect, conn):
       valid_input = False
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
             option = input("1. Customers \n 2. Orders \n 3. Reports \n") #prompt user for option
-            if option == 1:
+            if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Create customer \n 2. Update customer \n 3. View Customers \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.newCustomer()
-                        elif option1 == 2:
+                              classConnect.newCustomer(conn)
+                        elif option1 == "2":
                               valid_input1 = True
-                              classwork.updateCustomer()
-                        elif option1 == 3:
+                              classConnect.updateCustomer(conn)
+                        elif option1 == "3":
                               valid_input1 = True
-                              classwork.viewCustomers()
+                              classConnect.viewCustomers(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 2:
+            elif option == "2":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Create order \n 2. Update order \n 3. View Orders \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.createOrder()
-                        elif option1 == 2:
+                              classConnect.createOrder(conn)
+                        elif option1 == "2":
                               valid_input1 == True
-                              classwork.updateOrder()
-                        elif option1 == 3:
+                              classConnect.updateOrder(conn)
+                        elif option1 == "3":
                               valid_input1 = True
-                              classwork.viewOrders()
+                              classConnect.viewOrders(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 3:
+            elif option == "3":
                   valid_input = True
-                  classwork.viewReport()
+                  classConnect.viewReport(conn)
             else:
                   print("Please choose a valid menu: \n")
 
-def hr_menu():
+def hr_menu(classConnect, conn):
       valid_input = False
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
             option = input("1. Employee information \n 2. idk \n") #prompt user for option
-            if option == 1:
+            if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")
                   while valid_input1 == False: #loop until valid response
                         option1 = input("1. Update employee \n 2. View employees \n") #prompt user for option
-                        if option1 == 1:
+                        if option1 == "1":
                               valid_input1 = True
-                              classwork.updateUser()
-                        elif option1 == 2:
+                              classConnect.updateUser(conn)
+                        elif option1 == "2":
                               valid_input1 = True
-                              classwork.viewUsers()
+                              classConnect.viewUsers(conn)
                         else:
                               print("Please choose a valid option \n")
-            elif option == 2:
+            elif option == "2":
                   valid_input = True
                   #idk
             else:
                   print("Please choose a valid menu: \n")              
 
 
-def roleCheck(psycopg2 conn):
+def roleCheck(conn):
       cur = conn.cursor()
       cur.execute('''SELECT current_user;''')
       rows=cur.fetchall()
@@ -229,4 +224,4 @@ def roleCheck(psycopg2 conn):
 
 
       conn.commit()
-      conn.close()
+mainMenu()
