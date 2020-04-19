@@ -6,6 +6,7 @@ class Connection:
         self.host = "127.0.0.1"
         self.port = "8080"
         self.database = "postgres"
+        self.cIdCounter = 0
 
     #Login/out function calls
     def loginIn(self,usrName,Pasword):
@@ -77,17 +78,28 @@ class Connection:
         return
 
     #Customers function calls
+    def customerIdCounter(self):
+        rtrn = self.cIdCounter + 1
+        self.cIdCounter += 1
+        return rtrn
     def newCustomer(self,conn):
         myCursor = conn.cursor()
-        fn = input("Enter First Name: ")
-        ln = input("Enter Last Name: ")
-        myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (fn,ln,))
+        fName = input("Enter First Name: ")
+        lName = input("\nEnter Last Name: ")
+        cId = customerIdCounter() 
+        myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
         return
-    def updateCustomer(self,conn):
+    def updateCustomer(self,conn): #still needs validation of customerId
         myCursor = conn.cursor()
-        return
+        confirmCId = input("Please enter the ID of the customer you want to update: ")
+        fName = input("\nEnter new First Name: ")
+        lName = input("\nEnter new Last Name: ")
+        myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
     def viewCustomers(self,conn):
         myCursor = conn.cursor()
+        myCursor.execute("select * from Customer")
+        #need to print out table.
+        #can it be done by "print(myCursor.execute('select * from Customer'))"?
         return
 
     #Model function calls

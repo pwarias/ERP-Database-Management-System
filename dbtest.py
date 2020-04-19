@@ -1,5 +1,18 @@
 import psycopg2
 import classwork
+<<<<<<< HEAD
+
+connection1 = classwork.Connection()
+
+print("Welcome to the ERP DBMS! \n Main Menu \n")
+username = input("Please enter your username: ")
+print("\n")
+passwrd = input("Please enter your password: ") #very safe and secure xd
+
+conn = connection1.loginIn(username, passwrd)
+
+def mainMenu():
+=======
 
 def mainMenu():
       #we could also query db for the users role and display options based on that?
@@ -29,6 +42,7 @@ def mainMenu():
       classConnect=classwork.Connection()
       conn=classConnect.loginIn(username, passwrd)
 
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
       role = roleCheck(conn)
 
       if role == "admins":
@@ -40,7 +54,8 @@ def mainMenu():
       elif role == "hr":
             hr_menu(classConnect, conn)
       else:
-           print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
+            print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
+            print(role)
 
 
 def admin_menu(classConnect, conn):
@@ -48,7 +63,11 @@ def admin_menu(classConnect, conn):
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
+<<<<<<< HEAD
+            option = input("1. Users \n 2. Tables \n 3. Reports \n") #prompt user for option
+=======
             option = input("1. Users \n2. Tables \n3. Reports \n:") #prompt user for option
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
             if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")
@@ -56,10 +75,17 @@ def admin_menu(classConnect, conn):
                         option1 = input("1. Create user \n 2. Update user \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              connection1.newUser(conn)
+                        elif option1 == "2": #this is also for granting access to other users
+                              valid_input1 == True
+                              connection1.updateUser(conn)
+=======
                               classConnect.newUser(conn)
                         elif option1 == "2": #this is also for granting access to other users
                               valid_input1 == True
                               classConnect.updateUser(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "2":
@@ -69,10 +95,17 @@ def admin_menu(classConnect, conn):
                         option1 = input("1. Create table \n 2. Update table \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              connection1.newTable(conn)
+                        elif option1 == "2":
+                              valid_input1 == True
+                              connection1.updateTable(conn)
+=======
                               classConnect.newTable(conn)
                         elif option1 == "2":
                               valid_input1 == True
                               classConnect.updateTable(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "3":
@@ -82,10 +115,17 @@ def admin_menu(classConnect, conn):
                         option1 = input("1. Create report \n 2. View report \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              classwork.Connection.createReport()
+                        elif option1 == "2":
+                              valid_input1 == True
+                              classwork.Connection.viewReport()
+=======
                               classConnect.createReport(conn)
                         elif option1 == "2":
                               valid_input1 == True
                               classConnect.viewReport(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             else:
@@ -104,6 +144,15 @@ def engineer_menu(classConnect, conn):
                         option1 = input("1. Create model \n 2. View models \n 3. Update model \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              classwork.Connection.newDesign()
+                        elif option1 == "2":
+                              valid_input1 = True
+                              classwork.Connection.viewInventory()
+                        elif option1 == "3":
+                              valid_input1 = True
+                              classwork.Connection.updateModel()
+=======
                               classConnect.newDesign(conn)
                         elif option1 == "2":
                               valid_input1 = True
@@ -111,6 +160,7 @@ def engineer_menu(classConnect, conn):
                         elif option1 == "3":
                               valid_input1 = True
                               classConnect.updateModel(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "2":
@@ -120,6 +170,15 @@ def engineer_menu(classConnect, conn):
                         option1 = input("1. Add model to inventory \n 2. Delete model from inventory \n 3. View inventory \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              classwork.Connection.newModel()
+                        elif option1 == "2":
+                              valid_input1 == True
+                              classwork.Connection.deleteModel()
+                        elif option1 == "3":
+                              valid_input1 = True
+                              classwork.Connection.viewInventory()
+=======
                               classConnect.newModel(conn)
                         elif option1 == "2":
                               valid_input1 == True
@@ -127,11 +186,16 @@ def engineer_menu(classConnect, conn):
                         elif option1 == "3":
                               valid_input1 = True
                               classConnect.viewInventory(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "3":
                   valid_input = True
+<<<<<<< HEAD
+                  classwork.Connection.employeeInfo()
+=======
                   classConnect.employeeInfo(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
             else:
                   print("Please choose a valid menu: \n")
 
@@ -148,6 +212,15 @@ def sales_menu(classConnect, conn):
                         option1 = input("1. Create customer \n 2. Update customer \n 3. View Customers \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              classwork.Connection.newCustomer()
+                        elif option1 == "2":
+                              valid_input1 = True
+                              classwork.Connection.updateCustomer()
+                        elif option1 == "3":
+                              valid_input1 = True
+                              classwork.Connection.viewCustomers()
+=======
                               classConnect.newCustomer(conn)
                         elif option1 == "2":
                               valid_input1 = True
@@ -155,6 +228,7 @@ def sales_menu(classConnect, conn):
                         elif option1 == "3":
                               valid_input1 = True
                               classConnect.viewCustomers(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "2":
@@ -164,6 +238,15 @@ def sales_menu(classConnect, conn):
                         option1 = input("1. Create order \n 2. Update order \n 3. View Orders \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              classwork.Connection.createOrder()
+                        elif option1 == "2":
+                              valid_input1 == True
+                              classwork.Connection.updateOrder()
+                        elif option1 == "3":
+                              valid_input1 = True
+                              classwork.Connection.viewOrders()
+=======
                               classConnect.createOrder(conn)
                         elif option1 == "2":
                               valid_input1 == True
@@ -171,11 +254,16 @@ def sales_menu(classConnect, conn):
                         elif option1 == "3":
                               valid_input1 = True
                               classConnect.viewOrders(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "3":
                   valid_input = True
+<<<<<<< HEAD
+                  classwork.Connection.viewReport()
+=======
                   classConnect.viewReport(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
             else:
                   print("Please choose a valid menu: \n")
 
@@ -192,15 +280,22 @@ def hr_menu(classConnect, conn):
                         option1 = input("1. Update employee \n 2. View employees \n") #prompt user for option
                         if option1 == "1":
                               valid_input1 = True
+<<<<<<< HEAD
+                              classwork.Connection.updateUser()
+                        elif option1 == "2":
+                              valid_input1 = True
+                              classwork.Connection.viewUsers()
+=======
                               classConnect.updateUser(conn)
                         elif option1 == "2":
                               valid_input1 = True
                               classConnect.viewUsers(conn)
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
                         else:
                               print("Please choose a valid option \n")
             elif option == "2":
                   valid_input = True
-                  #idk
+                  print("working on this") #idk
             else:
                   print("Please choose a valid menu: \n")              
 
@@ -224,4 +319,9 @@ def roleCheck(conn):
 
 
       conn.commit()
+<<<<<<< HEAD
+      conn.close()
+
+=======
+>>>>>>> 62a846ae8a39814910095e195fc91da3c46d2f8e
 mainMenu()
