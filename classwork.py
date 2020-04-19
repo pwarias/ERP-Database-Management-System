@@ -21,7 +21,6 @@ class Connection:
             return
     
     def loginOut(self,conn):
-        print("Hello!!")
         conn.close()
         print("PostgeSQL connection is closed")
         return
@@ -49,6 +48,7 @@ class Connection:
         else:
             self.newUser()
         return
+
     def updateUser(self,conn):
         myCursor = conn.cursor()
         usrName = input("Enter a username you want to update: ")
@@ -130,12 +130,16 @@ class Connection:
         ssn = input("Enter the Employees ssn: ")
         paytype = input("Enter the Employees paytype: ")
         jobtype = input("Enter the Employees job type: ")
-        self.cursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
+        myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
         return
 
     def employeeInfo(self,conn): #Engineers have limited view of emplyee info like name, title, etc.
         myCursor = conn.cursor()
         return
+
+    def updateEmployee(self,conn):
+        myCursor = conn.cursor()
+
 
     #Report function calls
     def createReport(self,conn):
@@ -154,7 +158,7 @@ class Connection:
         myCursor = conn.cursor()
         return
 
-    #Orger function calls
+    #Order function calls
     def createOrder(self,conn):
         myCursor = conn.cursor()
         return
