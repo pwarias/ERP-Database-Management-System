@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 import psycopg2
 import classwork
 def test():
       permissionCheck()
-=======
 import psycopg2;
 from classwork import *;
->>>>>>> 026c821e015f207490b8811904e7e0b207623f27
 
 def mainMenu():
       #we could also query db for the users role and display options based on that?
@@ -32,13 +29,11 @@ def mainMenu():
                   no_connection = True
       '''
       
-<<<<<<< HEAD
       #call one of the following menus after verifying login info
       #call permisionCheck() to then call correspodning menu
       creatingCon=classwork.Connection()
       conn=creatingCon.loginIn(username, password)
 
-=======
       role = roleCheck(conn)
 
       if role == "admins":
@@ -51,7 +46,6 @@ def mainMenu():
             hr_menu()
       else:
            print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
->>>>>>> 026c821e015f207490b8811904e7e0b207623f27
 
 
 def admin_menu():
