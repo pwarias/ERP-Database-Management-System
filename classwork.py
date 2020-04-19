@@ -82,6 +82,7 @@ class Connection:
         rtrn = self.cIdCounter + 1
         self.cIdCounter += 1
         return rtrn
+        
     def newCustomer(self,conn):
         myCursor = conn.cursor()
         fName = input("Enter First Name: ")
@@ -89,6 +90,7 @@ class Connection:
         cId = customerIdCounter() 
         myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
         return
+
     def updateCustomer(self,conn): #still needs validation of customerId
         myCursor = conn.cursor()
         confirmCId = input("Please enter the ID of the customer you want to update: ")
