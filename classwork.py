@@ -2,10 +2,12 @@ import psycopg2
 import psycopg2.sql
 import sys
 from psycopg2.extensions import AsIs
+from psycopg2 import sql
+
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8080"
+        self.port = "5432"
         self.database = "postgres"
         self.cIdCounter = 0
 
@@ -39,7 +41,8 @@ class Connection:
             confPassword = input("Confirm the password: ")
             if Pasword == confPassword:
                 try:
-                    myCursor.execute(sql.SQL("Create user {} with password {}").format(sql.Identifier(usrName),sql.Identifier(Pasword)))
+                    #manually scrub username for errors- special case
+                    myCursor.execute("Create user %s with password %s", (AsIs(usrName),Pasword, )) #(AsIs(usrName), Pasword, ))
                     userType = input("What type user is this user: ")
                     myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                     print("New User has been added")
