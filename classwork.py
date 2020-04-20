@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.sql
 import sys
 from psycopg2.extensions import AsIs
 class Connection:
@@ -38,7 +39,7 @@ class Connection:
             confPassword = input("Confirm the password: ")
             if Pasword == confPassword:
                 try:
-                    myCursor.execute(sql.SQL("Create user {} with password {}").format(sql.Identifier(usrName,Pasword)))
+                    myCursor.execute(sql.SQL("Create user {} with password {}").format(sql.Identifier(usrName),sql.Identifier(Pasword)))
                     userType = input("What type user is this user: ")
                     myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                     print("New User has been added")
@@ -47,7 +48,7 @@ class Connection:
                     if error == 42710: #User does not exist 
                         print("User already exist, try a new username")
                     else:
-                        print("Error %d occured", error)
+                        print("Error : ", str(error))
 
             else:
                 print("Passwords do not match, please try again")
@@ -75,33 +76,6 @@ class Connection:
                     return -1    
         else:
             print("Password did not match")
-        return
-
-    #Customers function calls
-    def customerIdCounter(self):
-        rtrn = self.cIdCounter + 1
-        self.cIdCounter += 1
-        return rtrn
-        
-    def newCustomer(self,conn):
-        myCursor = conn.cursor()
-        fName = input("Enter First Name: ")
-        lName = input("\nEnter Last Name: ")
-        #cId = customerIdCounter() 
-        #SmyCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
-        return
-
-    def updateCustomer(self,conn): #still needs validation of customerId
-        myCursor = conn.cursor()
-        confirmCId = input("Please enter the ID of the customer you want to update: ")
-        fName = input("\nEnter new First Name: ")
-        lName = input("\nEnter new Last Name: ")
-        myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
-    def viewCustomers(self,conn):
-        myCursor = conn.cursor()
-        myCursor.execute("select * from Customer")
-        #need to print out table.
-        #can it be done by "print(myCursor.execute('select * from Customer'))"?
         return
 
     #Model function calls
@@ -147,14 +121,35 @@ class Connection:
         myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
         return
 
-    def employeeInfo(self,conn): #Engineers have limited view of emplyee info like name, title, etc.
+
+    #Customers function calls
+    def customerIdCounter(self):
+        rtrn = self.cIdCounter + 1
+        self.cIdCounter += 1
+        return rtrn
+        
+    def newCustomer(self,conn):
         myCursor = conn.cursor()
+        fName = input("Enter First Name: ")
+        lName = input("\nEnter Last Name: ")
+        #cId = customerIdCounter() 
+        #SmyCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
         return
 
-    def updateEmployee(self,conn):
+    def updateCustomer(self,conn): #still needs validation of customerId
         myCursor = conn.cursor()
+        confirmCId = input("Please enter the ID of the customer you want to update: ")
+        fName = input("\nEnter new First Name: ")
+        lName = input("\nEnter new Last Name: ")
+        myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
+    def viewCustomers(self,conn):
+        myCursor = conn.cursor()
+        myCursor.execute("select * from Customer")
+        #need to print out table.
+        #can it be done by "print(myCursor.execute('select * from Customer'))"?
+        return
 
-
+    #Przmek
     #Report function calls
     def createReport(self,conn):
         myCursor = conn.cursor()
@@ -162,7 +157,17 @@ class Connection:
     def viewReport(self,conn):
         myCursor = conn.cursor()
         return
-    
+    def newTable(self,conn):
+        myCursor = conn.cursor()
+        return
+    def updateTable(self,conn):
+        myCursor = conn.cursor()
+        return
+    #Part of Employee Function Calls
+    def updateEmployee(self,conn):
+        myCursor = conn.cursor()
+
+    #Andrew
     #Inventory function calls
     #there is newModel() no need for addModel()
     def deleteModel(self,conn):
@@ -171,7 +176,6 @@ class Connection:
     def viewInventory(self,conn):
         myCursor = conn.cursor()
         return
-
     #Order function calls
     def createOrder(self,conn):
         myCursor = conn.cursor()
@@ -182,11 +186,8 @@ class Connection:
     def viewOrders(self,conn):
         myCursor = conn.cursor()
         return
-
-
-    def newTable(self,conn):
+    #Part of Employee Function calls
+    def employeeInfo(self,conn): #Engineers have limited view of emplyee info like name, title, etc.
         myCursor = conn.cursor()
         return
-    def updateTable(self,conn):
-        myCursor = conn.cursor()
-        return
+    
