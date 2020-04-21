@@ -123,7 +123,7 @@ class Connection:
         myCursor.execute("select * from Customer")
         all = myCursor.fetchall()
         for i in range(len(all)):
-            print(all[i][0] + "\t" + all[i][1] + "\t" + all[i][2])
+            print(all[i][0], "\t\t", all[i][1], "\t\t", all[i][2])
 
     #Model function calls
     def newModel(self,modelNumber,itemCost,orderNumber,conn):
