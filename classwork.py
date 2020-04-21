@@ -235,10 +235,14 @@ class Connection:
         return
                             
 
-    def viewInventory(self,conn):
+    def viewInventory(self,conn): #Abdallah
+        print("Inventory ID\tSale Price\tCategory\tModel Name\tQuantity")
         myCursor = conn.cursor()
-        myCursor.execute("select * from inventory")
-        return
+        myCursor.execute("select * from Inventory")
+        allInv = myCursor.fetchall()
+        for i in range(len(all)):
+            print(allInv[i][0], "\t\t", allInv[i][1], "\t\t", allInv[i][2], "\t\t", allInv[i][3], "\t\t", allInv[i][4])
+
     #Order function calls
     def createOrder(self,conn):
         myCursor = conn.cursor()
