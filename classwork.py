@@ -86,21 +86,40 @@ class Connection:
         myCursor = conn.cursor()
         fName = input("Enter First Name: ")
         lName = input("\nEnter Last Name: ")
-        cId = customerIdCounter() 
-        myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
-        return
-    def updateCustomer(self,conn): #still needs validation of customerId
+        myCursor.execute("select * from customer where firstName = %s and lastName = %s", (fName, lName))
+        duplicateName = myCursor.fetchall() #if this list is empty then the customer has not been added yet
+        if duplicateName:
+            ques = input("Customer with that name already exists. Is this a different customer with the same name? (Y/N)")
+            if ques == "Y":
+                cId = customerIdCounter() 
+                myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+        else:
+            cId = customerIdCounter() 
+            myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+    def updateCustomer(self,conn):
         myCursor = conn.cursor()
-        confirmCId = input("Please enter the ID of the customer you want to update: ")
+        invalid = True
+        tryAgain = "Y"
+        while invalid == True and tryAgain == "Y":
+            confirmCId = input("Please enter the ID of the customer you want to update: ")
+            myCursor.execute("select * from Customer where customerId = %s", (confirmCId))
+            idExists = myCursor.fetchall() #list of that customerId, should not be empty
+            if idExists:
+                invalid = False
+            else:
+                tryAgain = input("Customer ID does not exist. Would you like to try another ID? (Y/N)")
+                if tryAgain == "N":
+                    return
         fName = input("\nEnter new First Name: ")
         lName = input("\nEnter new Last Name: ")
         myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
     def viewCustomers(self,conn):
+        print("Customer ID\tFirst Name\tLast Name")
         myCursor = conn.cursor()
         myCursor.execute("select * from Customer")
-        #need to print out table.
-        #can it be done by "print(myCursor.execute('select * from Customer'))"?
-        return
+        all = myCursor.fetchall()
+        for i in range(len(all)):
+            print(all[i][0] + "\t" + all[i][1] + "\t" + all[i][2])
 
     #Model function calls
     def newModel(self,modelNumber,itemCost,orderNumber,conn):
