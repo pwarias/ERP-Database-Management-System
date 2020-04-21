@@ -17,7 +17,7 @@ def mainMenu():
 
       role = roleCheck(conn)
 
-      if role == "admins":
+      if role == "admins" or role=="postgres":
             admin_menu(classConnect, conn)
       elif role == "engineer":
             engineer_menu(classConnect, conn)
