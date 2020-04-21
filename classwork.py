@@ -7,7 +7,7 @@ from psycopg2 import sql
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "5432"
+        self.port = "8080"
         self.database = "postgres"
         self.cIdCounter = 0
 
@@ -174,14 +174,30 @@ class Connection:
     #Inventory function calls
     #there is newModel() no need for addModel()
     def deleteModel(self,conn):
-        myCursor = conn.cursor()
+        invalid = True
+        while(invalid):
+            try:
+                myCursor = conn.cursor()
+                delModel = input("What model would you like to delete: ")
+                modelNum = input("What is the model number you would like to delete: ")
+                myCursor.execute("delete from model where modelnumber=%s and modelname=%s", (delModel,modelNum))
+                print("Model has been created")
+                invalid = False
+            except(Exception, psycopg2.Error) as error:
+                        if error == 42704:
+                            print("Error occured",error)
+                            invalid = True
         return
+                            
+
     def viewInventory(self,conn):
         myCursor = conn.cursor()
+        myCursor.execute("select * from inventory")
         return
     #Order function calls
     def createOrder(self,conn):
         myCursor = conn.cursor()
+
         return
     def updateOrder(self,conn):
         myCursor = conn.cursor()
