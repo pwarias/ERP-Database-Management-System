@@ -7,10 +7,8 @@ from psycopg2 import sql
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8080"
+        self.port = "8081"
         self.database = "postgres"
-        self.cIdCounter = 0
-        self.iIdcounter = 0
 
     #Login/out function calls
     def loginIn(self,usrName,Pasword):
@@ -84,10 +82,6 @@ class Connection:
 
     #Customers function calls
     #Abdallah
-    def customerIdCounter(self):
-        rtrn = self.cIdCounter + 1
-        self.cIdCounter += 1
-        return rtrn
     def newCustomer(self,conn):
         myCursor = conn.cursor()
         fName = input("Enter First Name: ")
@@ -97,10 +91,10 @@ class Connection:
         if duplicateName:
             ques = input("Customer with that name already exists. Is this a different customer with the same name? (Y/N)")
             if ques == "Y":
-                cId = customerIdCounter() 
+                cId = getMaxID(conn,'customer','customerid')+1
                 myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
         else:
-            cId = customerIdCounter() 
+            cId = getMaxID(conn,'customer','customerid')+1 
             myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
     def updateCustomer(self,conn):
         myCursor = conn.cursor()
@@ -129,10 +123,6 @@ class Connection:
 
     #Model function calls
     #Abdallah
-    def inventoryIdCounter(self):
-        rtrn = self.iIdcounter + 1
-        self.iIdcounter += 1
-        return rtrn
     def newModel(self,conn):
         myCursor = conn.cursor()
         invalid = True
@@ -153,7 +143,7 @@ class Connection:
         time = input("Please enter how long it took to manufacturer this model: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
-        invId = inventoryIdCounter()
+        invId = getMaxID(conn,'inventory','inventoryif')+1
         myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", 
                         (name, cost, doesExist[0], time))
         myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values \
@@ -180,12 +170,8 @@ class Connection:
                 except(Exception, psycopg2.Error) as error:
                     if error == '02':
                         itemCost = input("Enter the items cost: ")
-<<<<<<< HEAD
                         myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
                         myCursor.execute("Insert into design () values ()")
-=======
-                        myCursor.execute("Insert into model (employeeid,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
->>>>>>> f506f765a0dbff78fe96a85c13f81227abc2bc76
                         invalid=False
                         return
         else:
@@ -264,4 +250,12 @@ class Connection:
     def employeeInfo(self,conn): #Engineers have limited view of emplyee info like name, title, etc.
         myCursor = conn.cursor()
         return
+
+    def getMaxID(self,conn,table,column):
+        myCursor = conn.cursor()
+        print(column)
+        print(table)
+        myCursor.execute("select max(inventoryid) from inventory")
+        maxID = myCursor.fetchone()
+        return maxID[0]
     
