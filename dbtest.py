@@ -10,20 +10,6 @@ def mainMenu():
       passwrd = input("Please enter your password: ") #very safe and secure xd
 
       
-      '''
-      while no_connection == True:
-            username = input("Please enter your username: ")
-            print("\n")
-            passwrd = input("Please enter your password: ") #very safe and secure xd
-            
-            try:      
-                  conn = psycopg2.connect(database="postgres", user = username, password = passwrd, host = "localhost", port = "5432")
-                  no_connection = False
-            except:
-                  print("Could not connect to databse, please try again.")
-                  no_connection = True
-      '''
-      
       #call one of the following menus after verifying login info
       #call permisionCheck() to then call correspodning menu
       classConnect=classwork.Connection()
