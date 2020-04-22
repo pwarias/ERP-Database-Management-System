@@ -141,7 +141,7 @@ def sales_menu(classConnect, conn):
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
-            option = input("1. Customers \n 2. Orders \n 3. Reports \n") #prompt user for option
+            option = input("1. Customers \n2. Orders \n3. Reports \n") #prompt user for option
             if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")

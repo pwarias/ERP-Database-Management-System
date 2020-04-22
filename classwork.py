@@ -37,12 +37,12 @@ class Connection:
         invalid=True
         while(invalid):
             usrName = input("Enter a username: ")
-            Pasword = input("Enter a password: ")
+            Password = input("Enter a password: ")
             confPassword = input("Confirm the password: ")
             if Pasword == confPassword:
                 try:
                     #manually scrub username for errors- special case
-                    myCursor.execute("Create user %s with password %s", (AsIs(usrName),Pasword, )) #(AsIs(usrName), Pasword, ))
+                    myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
                     userType = input("What type user is this user: ")
                     myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                     print("New User has been added")
@@ -90,12 +90,13 @@ class Connection:
         return
 
     #Design function calls- verify why the double employee id check
-    def newDesign(self,employeeID,conn):
+    def newDesign(self,conn):
         myCursor = conn.cursor()
-        checkempID = myCursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
         employeeID = input("Enter your employee ID: ")
+        myCursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
+        checkempID = myCursor.fetchall()
         invalid=True
-        if employeeID == checkempID:
+        if employeeID == checkempID[0]:
             while(invalid):
                 modelNumber = input("Enter the new model number: ")
                 try:
@@ -106,7 +107,8 @@ class Connection:
                 except(Exception, psycopg2.Error) as error:
                     if error == '02':
                         itemCost = input("Enter the items cost: ")
-                        myCursor.execute("Insert into model (employeeif,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                        myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                        myCursor.execute("Insert into design () values ()")
                         invalid=False
                         return
         else:
