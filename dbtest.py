@@ -35,7 +35,7 @@ def admin_menu(classConnect, conn):
       valid_input1 = False
       print("Select a menu (number): \n")
       while valid_input == False: #loop until valid response
-            option = input("1. Users \n2. Tables \n3. Reports \n:") #prompt user for option
+            option = input("1. Users \n2. Tables \n3. Reports \n4. View Employees:") #prompt user for option
             if option == "1":
                   valid_input = True
                   print("Select an option (number): \n")
@@ -75,6 +75,9 @@ def admin_menu(classConnect, conn):
                               classConnect.viewReport(conn)
                         else:
                               print("Please choose a valid option \n")
+            elif option == "4":
+                  valid_input = True
+                  classConnect.employeeInfo(conn,roleCheck(conn))
             else:
                   print("Please choose a valid menu: \n")
 
@@ -182,7 +185,7 @@ def hr_menu(classConnect, conn):
                               classConnect.updateUser(conn)
                         elif option1 == "2":
                               valid_input1 = True
-                              classConnect.viewUsers(conn)
+                              classConnect.employeeInfo(conn,roleCheck(conn))
                         else:
                               print("Please choose a valid option \n")
             elif option == "2":

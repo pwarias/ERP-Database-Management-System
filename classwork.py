@@ -232,23 +232,68 @@ class Connection:
         myCursor = conn.cursor()
         myCursor.execute("select * from Inventory")
         allInv = myCursor.fetchall()
-        for i in range(len(all)):
+        print("Inventory ID \t\t Sale Price \t\t Category \t\t Model Name \t\t Quantity \n")
+        for i in range(len(allInv)):
             print(allInv[i][0], "\t\t", allInv[i][1], "\t\t", allInv[i][2], "\t\t", allInv[i][3], "\t\t", allInv[i][4])
+        return
 
     #Order function calls
     def createOrder(self,conn):
         myCursor = conn.cursor()
-
+        ordernumber = getMaxID(conn,'order','ordernumber')+1
+        custumerid = input("Enter the custumers ID number: ")
+        custIdCheck = myCursor.execute("select custumerid from customer where customerid = %d",custumerid)
+        custvals = myCursor.fetchall()
+        if custvals:
+            employeeid = input("Enter your employee ID number: ") 
+            inventoryid = input("Enter the inventory ID you would like to purchase: ")
+            myCursor.execute("select quantity from inventory where inventoryid = %d",inventoryid)
+            checkInventory = myCursor.fetchone()[0]
+            if checkInventory > 0:
+                myCursor.execute("select saleprice from inventory where inventoryid = %d",inventoryid)
+                saleprice = myCursor.fetchone()[0]
+                myCursor.execute("Insert into order (ordernumber,customerid,employeeid,saleprice,inventoryId) values ()")
+                myCursor.execute("Update inventory set inventory = %d where inventoryid = %d", (checkInventory-1,inventoryid))
         return
     def updateOrder(self,conn):
         myCursor = conn.cursor()
+        valid_input = False
+        valid_input1 = False
+        print("Select a menu (number): \n")
+        while valid_input == False: #loop until valid response
+            option = input("1. Change \n2. Orders \n3. Reports \n") #prompt user for option
+            if option == "1":
+                
         return
     def viewOrders(self,conn):
         myCursor = conn.cursor()
+        myCursor.execute("select * from orders")
+        orders = myCursor.fetchall()
+        print(" Order Numeber \t\t Customer ID \t\t Employee ID \t\t Sale Price \t\t Inventory")
+        for i in range(len(orders)):
+            print(orders[i][0], "\t\t", orders[i][1], "\t\t", orders[i][2],, orders[i][3], "\t\t", orders[i][4])
         return
     #Part of Employee Function calls
-    def employeeInfo(self,conn): #Engineers have limited view of emplyee info like name, title, etc.
+    def employeeInfo(self,conn,jobtype): #Engineers have limited view of emplyee info like name, title, etc.
         myCursor = conn.cursor()
+        if jobtype == "engineer":
+            myCursor.execute("select * from engineeremployeeview")
+            employees = myCursor.fetchall()
+            print(" First Name \t\t Last Name \t\t Job Type")
+            for i in range(len(employees)):
+                print(employees[i][0], "\t\t", employees[i][1], "\t\t", employees[i][2])
+        elif jobtype == "postgres":
+            myCursor.execute("select * from employee")
+            employees = myCursor.fetchall()
+            print(" Employee ID \t\t First Name \t\t Last Name \t\t Social Security Number \t\t Pay Type \t\t Job Type")
+            for i in range(len(employees)):
+                print(employees[i][0], "\t\t", employees[i][1], "\t\t", employees[i][2],employees[i][3], "\t\t", employees[i][4], "\t\t", employees[i][5])
+        else:
+            myCursor.execute("select * from hremployeeview")
+            employees = myCursor.fetchall()
+            print(" Employee ID \t\t First Name \t\t Last Name \t\t Pay Type \t\t Job Type")
+            for i in range(len(employees)):
+                print(employees[i][0], "\t\t", employees[i][1], "\t\t", employees[i][2], employees[i][3])
         return
 
     def getMaxID(self,conn,table,column):
