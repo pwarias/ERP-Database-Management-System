@@ -2,13 +2,13 @@ import psycopg2
 import psycopg2.sql
 import sys
 from psycopg2.extensions import AsIs
-from psycopg2 import sql'
+from psycopg2 import sql
 import datatime;
 
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8081"
+        self.port = "8080"
         self.database = "postgres"
 
     #Login/out function calls
@@ -339,7 +339,7 @@ class Connection:
         myCursor = conn.cursor()
         valid_input = False
         while valid_input == False:
-        print("Update Inventory Menu:")
+            print("Update Inventory Menu:")
             menuSelect = input("1. Update Quantity \n 2. Remove Item")
             if menuSelect == 1:
                 valid_input = True

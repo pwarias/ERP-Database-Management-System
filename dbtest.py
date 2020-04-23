@@ -161,7 +161,7 @@ def sales_menu(classConnect, conn,employeeid,loginid):
                         valid_input = True
                         print("Select an option (number): \n")
                         while valid_input1 == False: #loop until valid response
-                              option1 = input("1. Create order \n 2. Update order \n 3. View Orders \n") #prompt user for option
+                              option1 = input("1. Create order\n2. Update order\n3. Delete order\n4. View Orders \n") #prompt user for option
                               if option1 == "1":
                                     valid_input1 = True
                                     classConnect.createOrder(conn)
@@ -169,6 +169,9 @@ def sales_menu(classConnect, conn,employeeid,loginid):
                                     valid_input1 == True
                                     classConnect.updateOrder(conn)
                               elif option1 == "3":
+                                    valid_input1 = True
+                                    classConnect.deleteOrder(conn)
+                              elif option == "4":
                                     valid_input1 = True
                                     classConnect.viewOrders(conn)
                               else:
