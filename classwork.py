@@ -188,8 +188,8 @@ class Connection:
             if doesExist:
                 invalid = False
             else:
-                ques = input("Invalid model number. Would you like to try another model number? (Y/N)")
-                if ques != "Y":
+                tryAgain = input("Invalid design ID. Would you like to try another design ID? (Y/N)")
+                if tryAgain != "Y":
                     return
         name = input("Please enter a name for this model: ")
         cost = input("Please enter how much it cost for this model to be manufactured: ")
@@ -276,17 +276,52 @@ class Connection:
     #Employee function calls
     def newEmployee(self,conn):
         myCursor = conn.cursor()
-        employeeid = input("Enter the Employees ID: ")
-        firstname = input("Enter the Employees first mame: ")
-        lastname = input("Enter the Employees last name: ")
-        ssn = input("Enter the Employees ssn: ")
-        paytype = input("Enter the Employees paytype: ")
-        jobtype = input("Enter the Employees job type: ")
+        employeeid = input("Enter the Employee's ID: ")
+        firstname = input("Enter the Employee's first mame: ")
+        lastname = input("Enter the Employee's last name: ")
+        ssn = input("Enter the Employee's ssn: ")
+        paytype = input("Enter the Employee's paytype: ")
+        jobtype = input("Enter the Employee's job type: ")
         myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
         return
 
     def updateEmployee(self,conn):
         myCursor = conn.cursor()
+        invalid = True
+        invalid1 = True
+        tryAgain = "Y"
+        while invalid == True and tryAgain == "Y":
+            eId = input("What is the employee ID of the employee you want to update:")
+            myCursor.execute("select employeeid from employee where employeeid = %s", (eId))
+            eIdTuple = myCursor.fetchone()
+            if eIdTuple:
+                invalid = False
+            else:
+                tryAgain = input("Invalid employee ID. Would you like to try another ID? (Y/N)")
+                if tryAgain != "Y":
+                    return
+        change = input("Select an option (number):\n1. Change name\n2. Change pay type\n3. Change job type\n4. Change salary: ")
+        while invalid1 == True:
+            if change == "1":
+                invalid1 = False
+                fName = input("\nEnter new First Name: ")
+                lName = input("\nEnter new Last Name: ")
+                myCursor.execute("update Employee set firstName = %s, lastName = %s where employeeid = %s", (fName, lName, eId))
+                conn.commit()
+            elif change == "2":
+                invalid1 = False
+                ptype = input("Enter new pay type (hourly or salary): ")
+                myCursor.execute("update Employee set paytype = %s where employeeid = %s", (ptype, eId))
+            elif change == "3":
+                invalid1 = False
+                jtype = input("Enter new job type (Sales, Engineer, HR, Admin): ")
+                myCursor.execute("update Employee set jobtype = %s where employeeid = %s", (jtype, eId))
+            elif change == "4":
+                invalid1 = False
+                newSalary = input("Enter new salary (hourly rate if hourly pay type): ")
+                myCursor.execute("update Employee set salary = %s where employeeid = %s", (newSalary, eId))
+            else:
+                print("Please choose a valid option")
         return
 
     def employeeInfo(self,conn,jobtype): #Engineers have limited view of emplyee info like name, title, etc.
