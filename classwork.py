@@ -25,6 +25,7 @@ class Connection:
             time = int(currentTime.strftime("%H%M%S"))
             loginid = getMaxID(conn,'login','loginid')+1
             myCursor.execute("Insert into login (loginid,privilege,logouttime,logintime,employeeid,logindate,logoutdate) values () ", (loginid,roleCheck(conn),0,time,employeeid,0))
+            conn.commit()
             return conn,loginid
         except(Exception, psycopg2.Error) as error:
             print ("Error while connecting to PostgreSQL", error)
@@ -36,9 +37,21 @@ class Connection:
         outDate = int(currentTime.strftime("%Y%m%d"))
         outTime = int(currentTime.strftime("%H%M%S"))
         myCursor.execute("update login set (logouttime,logoutdate)=(%d,%d) where loginid = %d",(outTime,outDate,loginid))
+        conn.commit()
         conn.close()
         print("PostgeSQL connection is closed")
         return
+
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 
 
     #User function calls
@@ -53,8 +66,10 @@ class Connection:
                 try:
                     #manually scrub username for errors- special case
                     myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
+                    conn.commit()
                     userType = input("What type user is this user: ")
                     myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
+                    conn.commit()
                     print("New User has been added")
                     invalid=False
                 except(Exception,psycopg2.Error) as error:
@@ -77,8 +92,10 @@ class Connection:
             while(invalid):
                 try:
                     myCursor.execute("Alter user %s with password %s", (usrName,newPasword))
+                    conn.commit()
                     userType = input("What type of user is this user: ")
                     myCursor.execute("Grant %s privileges on database %s to %s", (userType,self.database,usrName))
+                    conn.commit()
                     print("New User has been added")
                     invalid=False
                 except(Exception,psycopg2.Error) as error:
@@ -109,15 +126,18 @@ class Connection:
         fName = input("Enter First Name: ")
         lName = input("\nEnter Last Name: ")
         myCursor.execute("select * from customer where firstName = %s and lastName = %s", (fName, lName))
+        conn.commit()
         duplicateName = myCursor.fetchall() #if this list is empty then the customer has not been added yet
         if duplicateName:
             ques = input("Customer with that name already exists. Is this a different customer with the same name? (Y/N)")
             if ques == "Y":
                 cId = getMaxID(conn,'customer','customerid')+1
                 myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+                conn.commit()
         else:
             cId = getMaxID(conn,'customer','customerid')+1 
             myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+            conn.commit()
     def updateCustomer(self,conn):
         myCursor = conn.cursor()
         invalid = True
@@ -135,6 +155,7 @@ class Connection:
         fName = input("\nEnter new First Name: ")
         lName = input("\nEnter new Last Name: ")
         myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
+        conn.commit()
     def viewCustomers(self,conn):
         print("Customer ID\tFirst Name\tLast Name")
         myCursor = conn.cursor()
@@ -177,10 +198,10 @@ class Connection:
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
         invId = getMaxID(conn,'inventory','inventoryif')+1
-        myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", 
-                        (name, cost, doesExist[0], time))
-        myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values \
-                        (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
+        myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
+        conn.commit()
+        myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
+        conn.commit()
     def updateModel(self,conn): 
         myCursor = conn.cursor()
         return
@@ -192,6 +213,7 @@ class Connection:
                 delModel = input("What model would you like to delete: ")
                 modelNum = input("What is the model number you would like to delete: ")
                 myCursor.execute("delete from model where modelnumber=%s and modelname=%s", (delModel,modelNum))
+                conn.commit()
                 print("Model has been created")
                 invalid = False
             except(Exception, psycopg2.Error) as error:
@@ -219,23 +241,26 @@ class Connection:
         myCursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
         checkempID = myCursor.fetchall()
         invalid=True
-        if employeeID == checkempID[0]:
-            while(invalid):
-                modelNumber = input("Enter the new model number: ")
-                try:
-                    myCursor.execute("Select modelNumber from model where modelNumber=%s", modelNumber)#should throw an error
+        invalidemp = True
+        while(invalid)
+            if employeeID == checkempID[0]:
 
-                    print("Please try another model number") 
+                while(invalid):
+                    modelNumber = input("Enter the new model number: ")
+                    try:
+                        myCursor.execute("Select modelNumber from model where modelNumber=%s", modelNumber)#should throw an error
+                        conn.commit()
+                        print("Please try another model number") 
 
-                except(Exception, psycopg2.Error) as error:
-                    if error == '02':
-                        itemCost = input("Enter the items cost: ")
-                        myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
-                        myCursor.execute("Insert into design () values ()")
-                        invalid=False
-                        return
-        else:
-            print("Invalid Employee id")#check what this might be for
+                    except(Exception, psycopg2.Error) as error:
+                        if error == '02':
+                            itemCost = input("Enter the items cost: ")
+                            myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                            conn.commit()
+                            invalid=False
+                            return
+            else:
+                print("Invalid Employee id")
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -349,6 +374,7 @@ class Connection:
                 if inventoryid == inventvals:
                     newQuantity = input("What is the updated quantity: ")
                     myCursor.execute("update inventory set quantity = newQuantity where inventoryid = %d", inventoryid)
+                    conn.commit()
                     return
             elif menuSelect == 2:
                 valid_input = True
@@ -357,6 +383,7 @@ class Connection:
                 inventvals = myCursor.fetchone()[0]
                 if inventoryid == inventvals:
                     myCursor.execute("delete from inventory where inventoryid = inventoryid")
+                    conn.commit()
                     return
             else:
                 valid_input = False
@@ -391,7 +418,9 @@ class Connection:
                 myCursor.execute("select saleprice from inventory where inventoryid = %d",inventoryid)
                 saleprice = myCursor.fetchone()[0]
                 myCursor.execute("Insert into order (ordernumber,customerid,employeeid,saleprice,inventoryId) values ()")
+                conn.commit()
                 myCursor.execute("Update inventory set inventory = %d where inventoryid = %d", (checkInventory-1,inventoryid))
+                conn.commit()
         return
     def updateOrder(self,conn):
         myCursor = conn.cursor()
@@ -426,11 +455,11 @@ class Connection:
     #Useful functions
     def getMaxID(self,conn,table,column):
         myCursor = conn.cursor()
-        print(column)
-        print(table)
-        myCursor.execute("select max(inventoryid) from inventory")
+        myCursor.execute("select max(%s) from %s", (column,table))
         maxID = myCursor.fetchone()
-        return maxID[0]
+        while maxID:
+            return maxID[0]
+        return 1
     
     def roleCheck(conn):
       cur = conn.cursor()
