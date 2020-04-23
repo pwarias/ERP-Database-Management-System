@@ -4,9 +4,8 @@ import classwork
 def mainMenu():
       
             #we could also query db for the users role and display options based on that?
-            print("Welcome to the ERP DBMS! \n Main Menu \n")
+            print("Welcome to the ERP DBMS!\n\nMain Menu")
             username = input("Please enter your username: ")
-            print("\n")
             passwrd = input("Please enter your password: ")
             employeeid = input("What is your employee id: ")
 
@@ -128,6 +127,7 @@ def engineer_menu(classConnect, conn,employeeid,loginid):
                                     print("Please choose a valid option \n")
                   elif option == "3":
                         valid_input = True
+                        
                         classConnect.employeeInfo(conn)
                   else:
                         print("Please choose a valid menu: \n")

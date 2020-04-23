@@ -24,7 +24,8 @@ class Connection:
             date = int(currentTime.strftime("%Y%m%d"))
             time = int(currentTime.strftime("%H%M%S"))
             loginid = getMaxID(conn,'login','loginid')+1
-            myCursor.execute("Insert into login (loginid,privilege,logouttime,logintime,employeeid,logindate,logoutdate) values () ", (loginid,roleCheck(conn),0,time,employeeid,0))
+            myCursor.execute("Insert into login (loginid,privilege,logouttime,logintime,employeeid,logindate,logoutdate) \
+                             values () ", (loginid,roleCheck(conn),0,time,employeeid,0))
             conn.commit()
             return conn,loginid
         except(Exception, psycopg2.Error) as error:
@@ -182,7 +183,8 @@ class Connection:
         invalid = True
         tryAgain = "Y"
         while invalid == True and tryAgain == "Y":
-            dsnNmbr = input("Please enter the design ID of the design that you would like to make a model and add to the inventory: ")
+            dsnNmbr = input("Please enter the design ID of the design that you would like to make a model \
+                            and add to the inventory: ")
             myCursor.execute("select designid from design where designid = %s", (dsnNmbr))
             doesExist = myCursor.fetchall()
             if doesExist:
@@ -197,7 +199,7 @@ class Connection:
         time = input("Please enter how long it took to manufacturer this model: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
-        invId = getMaxID(conn,'inventory','inventoryif')+1
+        invId = getMaxID(conn,'inventory','inventoryid')+1
         myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
         conn.commit()
         myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
@@ -233,7 +235,7 @@ class Connection:
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     
 
-
+    '''
     #Design function calls- verify why the double employee id check
     def newDesign(self,conn):
         myCursor = conn.cursor()
@@ -261,6 +263,7 @@ class Connection:
                             return
             else:
                 print("Invalid Employee id")
+    '''
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -282,8 +285,8 @@ class Connection:
         ssn = input("Enter the Employee's ssn: ")
         paytype = input("Enter the Employee's paytype: ")
         jobtype = input("Enter the Employee's job type: ")
-        myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
-        return
+        myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values \
+                        (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
 
     def updateEmployee(self,conn):
         myCursor = conn.cursor()
@@ -300,13 +303,15 @@ class Connection:
                 tryAgain = input("Invalid employee ID. Would you like to try another ID? (Y/N)")
                 if tryAgain != "Y":
                     return
-        change = input("Select an option (number):\n1. Change name\n2. Change pay type\n3. Change job type\n4. Change salary: ")
+        change = input("Select an option (number):\n1. Change name\n2. Change pay type\
+                        \n3. Change job type\n4. Change salary: ")
         while invalid1 == True:
             if change == "1":
                 invalid1 = False
                 fName = input("\nEnter new First Name: ")
                 lName = input("\nEnter new Last Name: ")
-                myCursor.execute("update Employee set firstName = %s, lastName = %s where employeeid = %s", (fName, lName, eId))
+                myCursor.execute("update Employee set firstName = %s, lastName = %s where employeeid = %s",
+                                (fName, lName, eId))
                 conn.commit()
             elif change == "2":
                 invalid1 = False
@@ -322,7 +327,6 @@ class Connection:
                 myCursor.execute("update Employee set salary = %s where employeeid = %s", (newSalary, eId))
             else:
                 print("Please choose a valid option")
-        return
 
     def employeeInfo(self,conn,jobtype): #Engineers have limited view of emplyee info like name, title, etc.
         myCursor = conn.cursor()
@@ -398,10 +402,11 @@ class Connection:
     def updateInventory(self,conn):
         myCursor = conn.cursor()
         valid_input = False
-        while valid_input == False:
+        tryAgain = "Y"
+        while valid_input == False and tryAgain == "Y":
             print("Update Inventory Menu:")
             menuSelect = input("1. Update Quantity \n 2. Remove Item")
-            if menuSelect == 1:
+            if menuSelect == "1":
                 valid_input = True
                 inventoryid = input("What inventory ID would you like to update: ")
                 invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %d",inventoryid)
@@ -411,7 +416,7 @@ class Connection:
                     myCursor.execute("update inventory set quantity = newQuantity where inventoryid = %d", inventoryid)
                     conn.commit()
                     return
-            elif menuSelect == 2:
+            elif menuSelect == "2":
                 valid_input = True
                 inventoryid = input("What inventory ID would you like to remove: ")
                 invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %d",inventoryid)
@@ -421,7 +426,9 @@ class Connection:
                     conn.commit()
                     return
             else:
-                valid_input = False
+                tryAgain = input("Invalid input. Would you like to try again? (Y/N)")
+                if tryAgain != "Y":
+                    return
 
 
 
@@ -454,7 +461,8 @@ class Connection:
                 saleprice = myCursor.fetchone()[0]
                 myCursor.execute("Insert into order (ordernumber,customerid,employeeid,saleprice,inventoryId) values ()")
                 conn.commit()
-                myCursor.execute("Update inventory set inventory = %d where inventoryid = %d", (checkInventory-1,inventoryid))
+                myCursor.execute("Update inventory set inventory = %d where inventoryid = %d",
+                                (checkInventory-1,inventoryid))
                 conn.commit()
         return
     def updateOrder(self,conn):
@@ -465,7 +473,7 @@ class Connection:
         while valid_input == False: #loop until valid response
             option = input("1. Change Model \n2. Delete Order") #prompt user for option
             if option == "1":
-                
+                pass
         return
     def viewOrders(self,conn):
         myCursor = conn.cursor()
@@ -473,7 +481,7 @@ class Connection:
         orders = myCursor.fetchall()
         print(" Order Numeber \t\t Customer ID \t\t Employee ID \t\t Sale Price \t\t Inventory")
         for i in range(len(orders)):
-            print(orders[i][0], "\t\t", orders[i][1], "\t\t", orders[i][2],, orders[i][3], "\t\t", orders[i][4])
+            print(orders[i][0], "\t\t", orders[i][1], "\t\t", orders[i][2], "\t\t", orders[i][3], "\t\t", orders[i][4])
         return
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -492,7 +500,7 @@ class Connection:
         myCursor = conn.cursor()
         myCursor.execute("select max(%s) from %s", (column,table))
         maxID = myCursor.fetchone()
-        while maxID:
+        if maxID:
             return maxID[0]
         return 1
     
