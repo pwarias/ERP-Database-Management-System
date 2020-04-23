@@ -326,8 +326,7 @@ class Connection:
 
 
     #Inventory function calls
-    def viewInventory(self,conn): #Abdallah
-        print("Inventory ID\tSale Price\tCategory\tModel Name\tQuantity")
+    def viewInventory(self,conn):
         myCursor = conn.cursor()
         myCursor.execute("select * from Inventory")
         allInv = myCursor.fetchall()
@@ -335,6 +334,34 @@ class Connection:
         for i in range(len(allInv)):
             print(allInv[i][0], "\t\t", allInv[i][1], "\t\t", allInv[i][2], "\t\t", allInv[i][3], "\t\t", allInv[i][4])
         return
+
+    def updateInventory(self,conn):
+        myCursor = conn.cursor()
+        valid_input = False
+        while valid_input == False:
+        print("Update Inventory Menu:")
+            menuSelect = input("1. Update Quantity \n 2. Remove Item")
+            if menuSelect == 1:
+                valid_input = True
+                inventoryid = input("What inventory ID would you like to update: ")
+                invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %d",inventoryid)
+                inventvals = myCursor.fetchone()[0]
+                if inventoryid == inventvals:
+                    newQuantity = input("What is the updated quantity: ")
+                    myCursor.execute("update inventory set quantity = newQuantity where inventoryid = %d", inventoryid)
+                    return
+            elif menuSelect == 2:
+                valid_input = True
+                inventoryid = input("What inventory ID would you like to remove: ")
+                invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %d",inventoryid)
+                inventvals = myCursor.fetchone()[0]
+                if inventoryid == inventvals:
+                    myCursor.execute("delete from inventory where inventoryid = inventoryid")
+                    return
+            else:
+                valid_input = False
+
+
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
