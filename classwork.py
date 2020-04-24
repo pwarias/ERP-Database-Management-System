@@ -215,7 +215,7 @@ class Connection:
                 newDesign=input("Please enter the new designId: ")
                 sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
                 myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
-                myCursor.commit() #should include after all executions
+                conn.commit() #should include after all executions
                 invalid=False
 
             except:
