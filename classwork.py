@@ -3,7 +3,7 @@ import psycopg2.sql
 import sys
 from psycopg2.extensions import AsIs
 from psycopg2 import sql
-import datatime
+import datetime
 
 class Connection:
     def __init__(self):
@@ -20,7 +20,7 @@ class Connection:
                                     port = self.port,
                                     database = self.database)
             myCursor = conn.cursor()
-            currentTime = datatime.datatime.now()
+            currentTime = datetime.datatime.now()
             date = int(currentTime.strftime("%Y%m%d"))
             time = int(currentTime.strftime("%H%M%S"))
             loginid = getMaxID(conn,'login','loginid')+1
@@ -34,9 +34,9 @@ class Connection:
     
     def loginOut(self,conn,loginid):
         myCursor = conn.cursor()
-        LogoutTime = datatime.datatime.now()
-        outDate = int(currentTime.strftime("%Y%m%d"))
-        outTime = int(currentTime.strftime("%H%M%S"))
+        LogoutTime = datetime.datatime.now()
+        outDate = int(LogoutTime.strftime("%Y%m%d"))
+        outTime = int(LogoutTime.strftime("%H%M%S"))
         myCursor.execute("update login set (logouttime,logoutdate)=(%d,%d) where loginid = %d",(outTime,outDate,loginid))
         conn.commit()
         conn.close()
@@ -63,7 +63,7 @@ class Connection:
             usrName = input("Enter a username: ")
             Password = input("Enter a password: ")
             confPassword = input("Confirm the password: ")
-            if Pasword == confPassword:
+            if Password == confPassword:
                 try:
                     #manually scrub username for errors- special case
                     myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
@@ -220,7 +220,7 @@ class Connection:
 
             except:
                 print("Error: model number not found")
-                
+
     def deleteModel(self,conn):
         invalid = True
         while(invalid):
