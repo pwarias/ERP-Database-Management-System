@@ -78,7 +78,6 @@ class Connection:
                         print("User already exist, try a new username")
                     else:
                         print("Error : ", str(error))
-
             else:
                 print("Passwords do not match, please try again")
         return
@@ -194,7 +193,7 @@ class Connection:
         name = input("Please enter a name for this model: ")
         cost = input("Please enter how much it cost for this model to be manufactured: ")
         price = input("Please enter a price for this model: ")
-        time = input("Please enter how long it took to manufacturer this model: ")
+        time = input("Please enter how long it took to manufacturer this model in days: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
         invId = getMaxID(conn,'inventory','inventoryid')+1
@@ -638,7 +637,7 @@ class Connection:
             return maxID[0]
         return 1
     
-    def roleCheck(conn):
+    def roleCheck(self, conn):
         cur = conn.cursor()
         cur.execute('''SELECT current_user;''')
         rows=cur.fetchall()

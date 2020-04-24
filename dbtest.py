@@ -177,7 +177,7 @@ def sales_menu(classConnect, conn,employeeid,loginid):
                                     print("Please choose a valid option \n")
                   elif option == "3":
                         valid_input = True
-                        classConnect.viewReport(conn)
+                        classConnect.viewTotalRevenur(conn)
                   else:
                         print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
@@ -189,7 +189,7 @@ def hr_menu(classConnect, conn,employeeid,loginid):
             valid_input1 = False
             print("Select a menu (number): \n")
             while valid_input == False: #loop until valid response
-                  option = input("1. Employee information \n 2. idk \n") #prompt user for option
+                  option = input("1. Employee information") #prompt user for option
                   if option == "1":
                         valid_input = True
                         print("Select an option (number): \n")
@@ -203,9 +203,6 @@ def hr_menu(classConnect, conn,employeeid,loginid):
                                     classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
                               else:
                                     print("Please choose a valid option \n")
-                  elif option == "2":
-                        valid_input = True
-                        print("working on this") #idk
                   else:
                         print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
