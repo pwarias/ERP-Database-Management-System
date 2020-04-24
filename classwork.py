@@ -214,7 +214,7 @@ class Connection:
                 newDesign=input("Please enter the new designId: ")
                 sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
                 myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
-                myCursor.commit() #should include after all executions
+                conn.commit() #should include after all executions
                 invalid=False
 
             except:
@@ -274,6 +274,9 @@ class Connection:
                             return
             else:
                 print("Invalid Employee id")
+    def updateDesign(self,conn):
+
+        return
     
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -288,14 +291,15 @@ class Connection:
     #Employee function calls
     def newEmployee(self,conn):
         myCursor = conn.cursor()
-        employeeid = input("Enter the Employee's ID: ")
-        firstname = input("Enter the Employee's first mame: ")
-        lastname = input("Enter the Employee's last name: ")
-        ssn = input("Enter the Employee's ssn: ")
-        paytype = input("Enter the Employee's paytype: ")
-        jobtype = input("Enter the Employee's job type: ")
-        myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype) values \
-                        (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype))
+        employeeid = getMaxID(conn,employee,employeeid)+1
+        firstname = input("Enter the Employees first mame: ")
+        lastname = input("Enter the Employees last name: ")
+        ssn = input("Enter the Employees ssn: ")
+        paytype = input("Enter the Employees paytype: ")
+        jobtype = input("Enter the Employees job type: ")
+        salary = input("Ennter the Employees salary: ")
+        myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype,salary) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype,salary))
+        return
 
     def updateEmployee(self,conn):
         myCursor = conn.cursor()
@@ -336,7 +340,7 @@ class Connection:
             else:
                 print("Please choose a valid option")
 
-    def employeeInfo(self,conn,jobtype): #Engineers have limited view of emplyee info like name, title, etc.
+    def employeeInfo(self,conn,jobtype):
         myCursor = conn.cursor()
         if jobtype == "engineer":
             myCursor.execute("select * from engineeremployeeview")
@@ -432,42 +436,18 @@ class Connection:
         parts=myCursor.fetchall()
         print(parts)
 
-    def updateInventory(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the inventory id: ")
-                myCursor.execute("Select inventoryId from inventory where inventoryId='%s'", (id, ))
-                newPrice=input("Please enter the new sales price: ")
-                newQuantity=input("Please enter the new quantity: ")
-                sql="UPDATE inventory SET saleprice=%s, quantity=%s WHERE inventoryId=%s"
-                myCursor.execute(sql, (newPrice, newQuantity, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
 
-            except:
-                print("Error: Inventory Id not found")
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-    def updateEmployee(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the employee id: ")
-                myCursor.execute("Select employeeId from employee where employeeId='%s'", (id, ))
-                #updates can be made more granular
-                newFirst=input("Please enter the employee's new first name: ")
-                newLast=input("Please enter the employee's new last name: ")
-                newPayType=input("Please enter the employee's new pay type: ")
-                #newSalary=input("Please enter the employee's new pay type: ")
-                sql="UPDATE employee SET firtname=%s, lastname=%s, paytype=%s WHERE employeeId=%s"
-                myCursor.execute(sql, (newFirst, newLast, newPayType, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
 
-            except:
-                print("Error: Inventory Id not found")
 
     #Abdallah
     #Table function calls
@@ -600,14 +580,31 @@ class Connection:
         return
     def updateOrder(self,conn):
         myCursor = conn.cursor()
-        valid_input = False
-        valid_input1 = False
-        print("Select a menu (number): \n")
-        while valid_input == False: #loop until valid response
-            option = input("1. Change Model \n2. Delete Order") #prompt user for option
-            if option == "1":
-                pass
+        orderid = input("What is your order ID: ")
+        checkOrder = myCursor.execute("select orderid from orders where orderid in (select orderid from orders)")
+        checkOderId = myCursor.fetchone()[0]
+        if orderid == checkOderId:
+            newInventoryId = input("What inventory ID would you like to change your order to: ")
+            myCursor.execute("select inventoryid from orders where orderid = %d", orderid)
+            oldInventoryId = myCursor.fetchone()[0]
+            myCursor.execute("select quantity from inventory where inventoryid = %d", oldInventoryId)
+            oldInventoryQuantity = myCursor.fetchone()[0]
+            myCursor.execute("select quantity from inventory where inventoryid = %d",newInventoryId)
+            checkInventory = myCursor.fetchone()[0]
+            if checkInventory > 0:
+                myCursor.execute("update orders set quantity = %d where inventoryid = %d", (checkInventory-1,newInventoryId))
+                myCursor.execute("update orders set quantity = %d where inventoryid = %d", (oldInventoryQuantity+1,oldInventoryId))
+                myCursor.execute("update orders set inventoryid = %d where orderid = %d", (newInventoryId,orderid))
+            else:
+                print("This new item is out of stock")
+
+
         return
+    def deleteOrder(self,conn):
+        myCursor = conn.cursor()
+        orderid
+        return
+
     def viewOrders(self,conn):
         myCursor = conn.cursor()
         myCursor.execute("select * from orders")
