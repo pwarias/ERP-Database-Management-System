@@ -85,9 +85,6 @@ class Connection:
     def newModel(self,modelNumber,itemCost,orderNumber,conn):
         myCursor = conn.cursor()
         return
-    def updateModel(self,conn): 
-        myCursor = conn.cursor()
-        return
 
     #Design function calls- verify why the double employee id check
     def newDesign(self,employeeID,conn):
@@ -106,7 +103,7 @@ class Connection:
                 except(Exception, psycopg2.Error) as error:
                     if error == '02':
                         itemCost = input("Enter the items cost: ")
-                        myCursor.execute("Insert into model (employeeif,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                        myCursor.execute("Insert into model (employeeid,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
                         invalid=False
                         return
         else:
@@ -154,21 +151,136 @@ class Connection:
 
     #Przmek
     #Report function calls
-    def createReport(self,conn):
+    def createTotalRevenue(self, conn): #Neeeds testing
+        #total revenue from sale, associate employee and customer
+        myCursor=conn.cursor()
+        sql="create or replace view total_revenue as select employeeid, customerid, sum(saleprice) from orders group by employeeid, customerid;"
+        myCursor.execute(sql)
+
+    def createCustomerPrediction(self, conn): #Neeeds testing
+        #Customer model bought and quantity to make prediction and understand trending
+        myCursor=conn.cursor()
+        sql= "create view customer_prediction as select orders.customerid, inventory.modelname, count(orders) from orders, inventory group by customerid, modelname;"
+        myCursor.execute(sql)
+
+    def createOrderInentory(self, conn): #Neeeds testing
+        #For each order, the associated parts and available inventory
+        myCursor=conn.cursor()
+        sql="create or replace view parts as select orders.ordernumber, inventory.modelname, inventory.quantity from orders, inventory;"
+        myCursor.execute(sql)
+
+    def viewExpenseReport(self, conn): #Neeeds testing
+        #Expense report, employee showing salary, bonus expense and part cost
+        myCursor=conn.cursor()
+        modelCostQuery="select sum(costmodel) from model"
+        salaryCostQuery="select sum(employee.salary) from employee where employee.paytype= 'Salary'"
+        hourlyCostQuery="select sum(employee.salary * 40 * 52) from employee where employee.paytype= 'Hourly'"
+
+        myCursor.execute(modelCostQuery)
+        modelCost=myCursor.fetchall()
+        print("cost for models is: ")
+        print(modelCost)
+
+        myCursor.execute(salaryCostQuery)
+        salaryCost=myCursor.fetchall()
+        print("cost for the salary employee is: ")
+        print(salaryCost)
+
+        myCursor.execute(hourlyCostQuery)
+        hourlyCost=myCursor.fetchall()
+        print("cost for the hourly employee's working 40 hour workweeks 52 weeks a year: ")
+        print(hourlyCost)
+        return
+
+
+    def viewTotalRevenue(self,conn): #Neeeds testing
+        myCursor = conn.cursor()
+        sql="select * from total_revenue"
+        myCursor.execute(sql)
+        totalRev=myCursor.fetchall()
+        print(totalRev)
+        return
+
+
+
+    def viewCustomerPrediction(self,conn): #Neeeds testing
+        myCursor = conn.cursor()
+        sql="select * from customer_prediction"
+        myCursor.execute(sql)
+        custPred=myCursor.fetchall()
+        print(custPred)
+        return
+
+    def viewOrderInventory(self,conn): #Neeeds testing
+        myCursor = conn.cursor()
+        sql="select * from parts"
+        myCursor.execute(sql)
+        parts=myCursor.fetchall()
+        print(parts)
+        return
+    
+
+    def newTable(self,conn): #checked with Ola likely not needed
         myCursor = conn.cursor()
         return
-    def viewReport(self,conn):
+    def updateModel(self, conn):
         myCursor = conn.cursor()
+        invalid=True
+        while(invalid):
+            try:
+                id=input("Please enter the model number of the model: ")
+                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
+                newCost=input("Please enter the new cost of the model: ") #error checking
+                newLead=input("Please enter the new lead time: ")
+                newDesign=input("Please enter the new designId: ")
+                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
+                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
+                myCursor.commit() #should include after all executions
+                invalid=False
+
+            except:
+                print("Error: model number not found")
+
         return
-    def newTable(self,conn):
+    def updateInventory(self, conn):
         myCursor = conn.cursor()
+        invalid=True
+        while(invalid):
+            try:
+                id=input("Please enter the inventory id: ")
+                myCursor.execute("Select inventoryId from inventory where inventoryId='%s'", (id, ))
+                newPrice=input("Please enter the new sales price: ")
+                newQuantity=input("Please enter the new quantity: ")
+                sql="UPDATE inventory SET saleprice=%s, quantity=%s WHERE inventoryId=%s"
+                myCursor.execute(sql, (newPrice, newQuantity, id, ))
+                myCursor.commit() #should include after all executions
+                invalid=False
+
+            except:
+                print("Error: Inventory Id not found")
+
         return
-    def updateTable(self,conn):
+    def updateEmployee(self, conn):
         myCursor = conn.cursor()
+        invalid=True
+        while(invalid):
+            try:
+                id=input("Please enter the employee id: ")
+                myCursor.execute("Select employeeId from employee where employeeId='%s'", (id, ))
+                #updates can be made more granular
+                newFirst=input("Please enter the employee's new first name: ")
+                newLast=input("Please enter the employee's new last name: ")
+                newPayType=input("Please enter the employee's new pay type: ")
+                #newSalary=input("Please enter the employee's new pay type: ")
+                sql="UPDATE employee SET firtname=%s, lastname=%s, paytype=%s WHERE employeeId=%s"
+                myCursor.execute(sql, (newFirst, newLast, newPayType, id, ))
+                myCursor.commit() #should include after all executions
+                invalid=False
+
+            except:
+                print("Error: Inventory Id not found")
+
         return
-    #Part of Employee Function Calls
-    def updateEmployee(self,conn):
-        myCursor = conn.cursor()
 
     #Andrew
     #Inventory function calls
