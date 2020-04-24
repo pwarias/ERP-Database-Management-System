@@ -127,8 +127,7 @@ def engineer_menu(classConnect, conn,employeeid,loginid):
                                     print("Please choose a valid option \n")
                   elif option == "3":
                         valid_input = True
-                        
-                        classConnect.employeeInfo(conn)
+                        classConnect.employeeInfo(conn, classConnect.roleCheck(conn))
                   else:
                         print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
