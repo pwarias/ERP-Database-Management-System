@@ -3,7 +3,7 @@ import psycopg2.sql
 import sys
 from psycopg2.extensions import AsIs
 from psycopg2 import sql
-#import datatime;
+import datatime
 
 class Connection:
     def __init__(self):
@@ -202,9 +202,25 @@ class Connection:
         conn.commit()
         myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
         conn.commit()
-    def updateModel(self,conn): 
+
+    def updateModel(self, conn):
         myCursor = conn.cursor()
-        return
+        invalid=True
+        while(invalid):
+            try:
+                id=input("Please enter the model number of the model: ")
+                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
+                newCost=input("Please enter the new cost of the model: ") #error checking
+                newLead=input("Please enter the new lead time: ")
+                newDesign=input("Please enter the new designId: ")
+                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
+                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
+                myCursor.commit() #should include after all executions
+                invalid=False
+
+            except:
+                print("Error: model number not found")
+                
     def deleteModel(self,conn):
         invalid = True
         while(invalid):
@@ -240,9 +256,9 @@ class Connection:
         checkempID = myCursor.fetchall()
         invalid=True
         invalidemp = True
-        while(invalid)
+        while(invalid):
             if employeeID == checkempID[0]:
-
+                #is there something supposed to be here?
                 while(invalid):
                     modelNumber = input("Enter the new model number: ")
                     try:
@@ -420,24 +436,6 @@ class Connection:
         myCursor.execute(sql)
         parts=myCursor.fetchall()
         print(parts)
-
-    def updateModel(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the model number of the model: ")
-                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
-                newCost=input("Please enter the new cost of the model: ") #error checking
-                newLead=input("Please enter the new lead time: ")
-                newDesign=input("Please enter the new designId: ")
-                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
-                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
-
-            except:
-                print("Error: model number not found")
 
     def updateInventory(self, conn):
         myCursor = conn.cursor()
