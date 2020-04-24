@@ -25,7 +25,7 @@ class Connection:
             time = int(currentTime.strftime("%H%M%S"))
             loginid = getMaxID(conn,'login','loginid')+1
             myCursor.execute("Insert into login (loginid,privilege,logouttime,logintime,employeeid,logindate,logoutdate) \
-                             values () ", (loginid,roleCheck(conn),0,time,employeeid,0))
+                             values (%d,%s,%d,%d,%d,%d,%d) ", (loginid,roleCheck(conn),0,time,employeeid,0))
             conn.commit()
             return conn,loginid
         except(Exception, psycopg2.Error) as error:
