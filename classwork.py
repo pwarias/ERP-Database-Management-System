@@ -3,7 +3,7 @@ import psycopg2.sql
 import sys
 from psycopg2.extensions import AsIs
 from psycopg2 import sql
-import datatime;
+#import datatime;
 
 class Connection:
     def __init__(self):
@@ -142,8 +142,7 @@ class Connection:
     def updateCustomer(self,conn):
         myCursor = conn.cursor()
         invalid = True
-        tryAgain = "Y"
-        while invalid == True and tryAgain == "Y":
+        while invalid == True:
             confirmCId = input("Please enter the ID of the customer you want to update: ")
             myCursor.execute("select * from Customer where customerId = %s", (confirmCId))
             idExists = myCursor.fetchall() #list of that customerId, should not be empty
@@ -181,11 +180,10 @@ class Connection:
     def newModel(self,conn):
         myCursor = conn.cursor()
         invalid = True
-        tryAgain = "Y"
-        while invalid == True and tryAgain == "Y":
+        while invalid == True:
             dsnNmbr = input("Please enter the design ID of the design that you would like to make a model \
                             and add to the inventory: ")
-            myCursor.execute("select designid from design where designid = %s", (dsnNmbr))
+            myCursor.execute("select designid from design where designid = %d", (dsnNmbr))
             doesExist = myCursor.fetchall()
             if doesExist:
                 invalid = False
@@ -292,8 +290,7 @@ class Connection:
         myCursor = conn.cursor()
         invalid = True
         invalid1 = True
-        tryAgain = "Y"
-        while invalid == True and tryAgain == "Y":
+        while invalid == True:
             eId = input("What is the employee ID of the employee you want to update:")
             myCursor.execute("select employeeid from employee where employeeid = %s", (eId))
             eIdTuple = myCursor.fetchone()
@@ -370,12 +367,54 @@ class Connection:
     def viewReport(self,conn):
         myCursor = conn.cursor()
         return
-    def newTable(self,conn):
+
+    #Abdallah
+    #Table function calls
+    def newTable(self, conn):
         myCursor = conn.cursor()
-        return
-    def updateTable(self,conn):
+        invalid = True
+        tryAgain = "Y"
+        tblName = input("Please enter the name of the table: ")
+
+    def updateTable(self, conn):
         myCursor = conn.cursor()
-        return  
+        invalid = True
+        myCursor.execute("select table_name from information_schema.tables where table_schema = 'public'")
+        tblNames = myCursor.fetchall() #list of all tables and views
+        while invalid == True:
+            tblName = input("Please enter the name of the table: ")
+            if tblName in tblNames:
+                invalid = False
+            else:
+                tryAgain = input("Table doesn't exist. Would you like to try another name? (Y/N)")
+                if tryAgain != "Y":
+                    return
+        myCursor.execute("select column_name from information_schema.columns where table_schema = 'public'\
+                         and table_name = %s", (tblName))
+        cols = myCursor.fetchall() #list of tuples i.e. [(employeeId), (firstName)...(salary)]
+        option = input("Please select an option (number):\n1. Rename column\n2. Add coulumn\n3. Delete column")
+        while invalid == True:
+            if option == "1":
+                invalid = False
+                invalid1 = True
+                while invalid1 == True:
+                    col = input("Please enter the name of the column you want to rename: ")
+                    if col in cols:
+                        invalid1 = False
+                    else:
+                        tryAgain = input("Column doesn't exist. Would you like to try another name? (Y/N)")
+                        if tryAgain != "Y":
+                            return
+                newCol = input("Please enter the new column name: ")
+                myCursor.execute("alter table %s rename column %s to %s", (col, newCol))
+            elif option == "2":
+                invalid = False
+            elif option == "3":
+                invalid = False
+            else:
+                tryAgain = input("Invalid input. Would you like to try again? (Y/N)")
+                if tryAgain != "Y":
+                    return
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -402,8 +441,7 @@ class Connection:
     def updateInventory(self,conn):
         myCursor = conn.cursor()
         valid_input = False
-        tryAgain = "Y"
-        while valid_input == False and tryAgain == "Y":
+        while valid_input == False:
             print("Update Inventory Menu:")
             menuSelect = input("1. Update Quantity \n 2. Remove Item")
             if menuSelect == "1":
