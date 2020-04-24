@@ -437,42 +437,18 @@ class Connection:
         parts=myCursor.fetchall()
         print(parts)
 
-    def updateInventory(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the inventory id: ")
-                myCursor.execute("Select inventoryId from inventory where inventoryId='%s'", (id, ))
-                newPrice=input("Please enter the new sales price: ")
-                newQuantity=input("Please enter the new quantity: ")
-                sql="UPDATE inventory SET saleprice=%s, quantity=%s WHERE inventoryId=%s"
-                myCursor.execute(sql, (newPrice, newQuantity, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
 
-            except:
-                print("Error: Inventory Id not found")
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-    def updateEmployee(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the employee id: ")
-                myCursor.execute("Select employeeId from employee where employeeId='%s'", (id, ))
-                #updates can be made more granular
-                newFirst=input("Please enter the employee's new first name: ")
-                newLast=input("Please enter the employee's new last name: ")
-                newPayType=input("Please enter the employee's new pay type: ")
-                #newSalary=input("Please enter the employee's new pay type: ")
-                sql="UPDATE employee SET firtname=%s, lastname=%s, paytype=%s WHERE employeeId=%s"
-                myCursor.execute(sql, (newFirst, newLast, newPayType, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
 
-            except:
-                print("Error: Inventory Id not found")
 
     #Abdallah
     #Table function calls
