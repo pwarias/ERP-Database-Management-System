@@ -246,30 +246,29 @@ class Connection:
     #Design function calls- verify why the double employee id check
     def newDesign(self,conn):
         myCursor = conn.cursor()
-        employeeID = input("Enter your employee ID: ")
-        myCursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
-        checkempID = myCursor.fetchall()
-        invalid=True
         invalidemp = True
+        while(invalidemp):
+            employeeID = input("Enter your employee ID: ")
+            try:
+                empCheck = myCursor.execute("Select employeeid from employee where employeeid = %s", employeeID)
+                invalidemp = False
+            except(Exception, psycopg2.Error) as error:
+                print(error)
+        invalid=True
         while(invalid):
-            if employeeID == checkempID[0]:
-                #is there something supposed to be here?
-                while(invalid):
-                    modelNumber = input("Enter the new model number: ")
-                    try:
-                        myCursor.execute("Select modelNumber from model where modelNumber=%s", modelNumber)#should throw an error
-                        conn.commit()
-                        print("Please try another model number") 
+            designid = self.getMaxID(conn,'design','designid')
+            try:
+                print("hello")
+                myCursor.execute("Select designid from design where designid=%s", designid)#should throw an error
+                itemCost = input("Enter the items cost: ")
+                myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                conn.commit()
 
-                    except(Exception, psycopg2.Error) as error:
-                        if error == '02':
-                            itemCost = input("Enter the items cost: ")
-                            myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
-                            conn.commit()
-                            invalid=False
-                            return
-            else:
-                print("Invalid Employee id")
+            except(Exception, psycopg2.Error) as error:
+                if error:
+                    invalid=False
+                    return
+                
     def updateDesign(self,conn):
 
         return
