@@ -3,36 +3,35 @@ import classwork
 
 def mainMenu():
       
-      #we could also query db for the users role and display options based on that?
-      print("Welcome to the ERP DBMS!\n\nMain Menu")
-      username = input("Please enter your username: ")
-      passwrd = input("Please enter your password: ")
-      employeeid = input("What is your employee id: ")
-      conn1 = psycopg2.connect(user = 'idcheck',
-                              password = 'gettheid3',
-                              host = '127.0.0.1',
-                              port = 8081,
-                              database = 'postgres')
-      
-      #call one of the following menus after verifying login info
-      #call permisionCheck() to then call correspodning menu
-      classConnect = classwork.Connection()
-      classConnect.loginid = classConnect.getMaxID(conn1,'login','loginid')+1
-      conn = classConnect.loginIn(username, passwrd,employeeid)
-      role = classConnect.roleCheck(conn)
-      try:
-            if role == "admins" or role == "postgres":
-                  admin_menu(classConnect, conn,employeeid)
-            elif role == "engineer":
-                  engineer_menu(classConnect, conn,employeeid)
-            elif role == "sales":
-                  sales_menu(classConnect, conn,employeeid)
-            elif role == "hr":
-                  hr_menu(classConnect, conn,employeeid)
-            else:
-                  print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
-      except KeyboardInterrupt:
-            classConnect.loginOut(conn)
+            #we could also query db for the users role and display options based on that?
+            print("Welcome to the ERP DBMS!\n\nMain Menu")
+            username = input("Please enter your username: ")
+            passwrd = input("Please enter your password: ")
+            employeeid = input("What is your employee id: ")
+            conn1 = psycopg2.connect(user = 'idcheck',
+                                    password = 'gettheid3',
+                                    host = '127.0.0.1',
+                                    port = 5432,
+                                    database = 'postgres')
+            #call one of the following menus after verifying login info
+            #call permisionCheck() to then call correspodning menu
+            classConnect = classwork.Connection()
+            classConnect.loginid = classConnect.getMaxID(conn1,'login','loginid')+1
+            conn = classConnect.loginIn(username, passwrd,employeeid)
+            role = classConnect.roleCheck(conn)
+            try:
+                  if role == "admins" or role=="postgres":
+                        admin_menu(classConnect, conn,employeeid)
+                  elif role == "engineer":
+                        engineer_menu(classConnect, conn,employeeid)
+                  elif role == "sales":
+                        sales_menu(classConnect, conn,employeeid)
+                  elif role == "hr":
+                        hr_menu(classConnect, conn,employeeid)
+                  else:
+                        print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
+            except KeyboardInterrupt:
+                  classConnect.loginOut(conn)
 
 
 def admin_menu(classConnect, conn,employeeid):
@@ -129,7 +128,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                           classConnect.newDesign(conn)
                                     elif option1 == "2":
                                           valid_input1 = True
-                                          classConnect.viewInventory(conn)
+                                          classConnect.viewDesigns(conn)
                                     elif option1 == "3":
                                           valid_input1 = True
                                           classConnect.updateDesign(conn)
@@ -148,7 +147,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                           classConnect.newModel(conn)
                                     elif option1 == "2":
                                           valid_input1 = True
-                                          classConnect.viewInventory(conn)
+                                          classConnect.viewModels(conn)
                                     elif option1 == "3":
                                           valid_input1 = True
                                           classConnect.updateModel(conn)
@@ -161,17 +160,14 @@ def engineer_menu(classConnect, conn,employeeid):
                               valid_input = True
                               print("Select an option (number): \n")
                               while valid_input1 == False: #loop until valid response
-                                    option1 = input("1. Add model to inventory\n2. Delete model from inventory\n3. View inventory\n4. Return to previous menu\n") #prompt user for option
+                                    option1 = input("1. Update inventory\n2. View inventory\n3. Return to previous menu\n") #prompt user for option
                                     if option1 == "1":
                                           valid_input1 = True
-                                          classConnect.newModel(conn)
+                                          classConnect.updateInventory(conn)
                                     elif option1 == "2":
-                                          valid_input1 == True
-                                          classConnect.deleteModel(conn)
-                                    elif option1 == "3":
                                           valid_input1 = True
                                           classConnect.viewInventory(conn)
-                                    elif option1 == "4":
+                                    elif option1 == "3":
                                           valid_input = False
                                           break
                                     else:
@@ -240,7 +236,7 @@ def sales_menu(classConnect, conn,employeeid):
                                           print("Please choose a valid option \n")
                         elif option == "3":
                               valid_input = True
-                              classConnect.viewReport(conn)
+                              classConnect.viewTotalRevenue(conn)
                         elif option == "4":
                               print("Logging out...")
                               classConnect.loginOut(conn)
@@ -267,7 +263,7 @@ def hr_menu(classConnect, conn,employeeid):
                                     if option1 == "1":
                                           valid_input1 = True
                                           goBack = False
-                                          classConnect.updateUser(conn)
+                                          classConnect.updateEmployee(conn)
                                     elif option1 == "2":
                                           valid_input1 = True
                                           goBack = False
