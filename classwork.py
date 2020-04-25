@@ -243,19 +243,32 @@ class Connection:
     def deleteModel(self,conn):
         try:
             invalid = True
-            while(invalid):
+            while(invalid==True):
                 try:
                     myCursor = conn.cursor()
                     delModel = input("What model would you like to delete: ")
-                    modelNum = input("What is the model number you would like to delete: ")
-                    myCursor.execute("delete from model where modelnumber=%s and modelname=%s", (delModel,modelNum))
+                    desId = input("What is the design id of this model: ")
+                    myCursor.execute("delete from model where designid=%s and modelname=%s", (desId,delModel))
+                    myCursor.execute("delete from inventory where modelname = %s", (delModel))
                     conn.commit()
-                    print("Model has been created")
+                    print("Model %s has been deleted", (delModel))
                     invalid = False
                 except(Exception, psycopg2.Error) as error:
                             if error == 42704:
                                 print("Error occured",error)
                                 invalid = True
+        except KeyboardInterrupt:     
+            self.loginOut(conn)
+
+    def viewModels(self,conn):
+        try:
+            myCursor = conn.cursor()
+            myCursor.execute("select * from Model")
+            allMod = myCursor.fetchall()
+            print("Model Name \t\t Cost of Model \t\t Design ID \t\t Lead Time \n")
+            for i in range(len(allMod)):
+                print(allMod[i][0], "\t\t", allMod[i][1], "\t\t", allMod[i][2], "\t\t", allMod[i][3])
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -315,6 +328,17 @@ class Connection:
             self.loginOut(conn)
         return
     
+    def viewDesigns(self,conn):
+            try:
+                myCursor = conn.cursor()
+                myCursor.execute("select * from Design")
+                allDes = myCursor.fetchall()
+                print("Design ID \t\t Employee ID \t\t Design Revisions \n")
+                for i in range(len(allDes)):
+                    print(allDes[i][0], "\t\t", allDes[i][1], "\t\t", allDes[i][2])
+                return
+            except KeyboardInterrupt:     
+                self.loginOut(conn)        
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
