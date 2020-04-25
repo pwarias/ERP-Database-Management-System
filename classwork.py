@@ -77,7 +77,6 @@ class Connection:
                         print("User already exist, try a new username")
                     else:
                         print("Error : ", str(error))
-
             else:
                 print("Passwords do not match, please try again")
         return
@@ -193,7 +192,7 @@ class Connection:
         name = input("Please enter a name for this model: ")
         cost = input("Please enter how much it cost for this model to be manufactured: ")
         price = input("Please enter a price for this model: ")
-        time = input("Please enter how long it took to manufacturer this model: ")
+        time = input("Please enter how long it took to manufacturer this model in days: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
         invId = getMaxID(conn,'inventory','inventoryid')+1
@@ -291,7 +290,7 @@ class Connection:
     #Employee function calls
     def newEmployee(self,conn):
         myCursor = conn.cursor()
-        employeeid = getMaxID(conn,employee,employeeid)+1
+        employeeid = getMaxID(conn,'employee','employeeid')+1
         firstname = input("Enter the Employees first mame: ")
         lastname = input("Enter the Employees last name: ")
         ssn = input("Enter the Employees ssn: ")
@@ -452,6 +451,7 @@ class Connection:
     #Abdallah
     #Table function calls
     def updateTable(self, conn):
+        #to prompt for table name
         myCursor = conn.cursor()
         invalid = True
         myCursor.execute("select table_name from information_schema.tables where table_schema = 'public'")
@@ -464,9 +464,13 @@ class Connection:
                 tryAgain = input("Table doesn't exist. Would you like to try another name? (Y/N)")
                 if tryAgain != "Y":
                     return
+
+        #to list all columns in that table
         myCursor.execute("select column_name from information_schema.columns where table_schema = 'public'\
                          and table_name = %s", (tblName))
         cols = myCursor.fetchall() #list of tuples i.e. [(employeeId), (firstName)...(salary)]
+
+        #to do an operation on columns of table
         option = input("Please select an option (number):\n1. Rename column\n2. Add coulumn\n3. Delete column")
         while invalid == True:
             if option == "1":
@@ -481,11 +485,36 @@ class Connection:
                         if tryAgain != "Y":
                             return
                 newCol = input("Please enter the new column name: ")
-                myCursor.execute("alter table %s rename column %s to %s", (col, newCol))
+                myCursor.execute("alter table %s rename column %s to %s", (tblName, col, newCol))
             elif option == "2":
                 invalid = False
+                invalid1 = True
+                while invalid1 == True:
+                    col = input("Please enter the name of the column you want to add: ")
+                    if col not in cols:
+                        invalid1 = False
+                    else:
+                        tryAgain = input("Column already exists. Would you like to try another name? (Y/N)")
+                        if tryAgain != "Y":
+                            return
+                prompt = input("Please choose the data type (number):\n1. String\n2. Int")
+                if prompt == "1":
+                    colType = 'varchar(50)'
+                elif prompt == "2":
+                    colType = 'int4'
+                myCursor.execute("alter table %s add column %s %s", (tblName, col, colType))
             elif option == "3":
                 invalid = False
+                invalid1 = True
+                while invalid1 == True:
+                    col = input("Please enter the name of the column you want to delete: ")
+                    if col in cols:
+                        invalid1 = False
+                    else:
+                        tryAgain = input("Column doesn't exist. Would you like to try another name? (Y/N)")
+                        if tryAgain != "Y":
+                            return
+                myCursor.execute("alter table %s drop column %s", (tblName, col))
             else:
                 tryAgain = input("Invalid input. Would you like to try again? (Y/N)")
                 if tryAgain != "Y":
@@ -634,7 +663,11 @@ class Connection:
             return maxID[0]
         return 1
     
+<<<<<<< HEAD
     def roleCheck(self,conn):
+=======
+    def roleCheck(self, conn):
+>>>>>>> a76e1fef07abb010fa57b2150937a9c15327e48c
         cur = conn.cursor()
         cur.execute('''SELECT current_user;''')
         rows=cur.fetchall()
