@@ -254,23 +254,23 @@ class Connection:
             employeeID = input("Enter your employee ID: ")
             try:
                 empCheck = myCursor.execute("Select employeeid from employee where employeeid = %s", employeeID)
+                conn.commit()
                 invalidemp = False
             except(Exception, psycopg2.Error) as error:
+                print("hello")
                 print(error)
         invalid=True
         while(invalid):
             designid = self.getMaxID(conn,'design','designid')
             try:
-                print("hello")
-                myCursor.execute("Select designid from design where designid=%s", designid)#should throw an error
                 itemCost = input("Enter the items cost: ")
-                myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
+                myCursor.execute("Insert into design (designid,employeeid,designrev) values (%s,%s,%s)", (designid,employeeID,itemCost))
                 conn.commit()
+                invalidemp = False
 
             except(Exception, psycopg2.Error) as error:
-                if error:
-                    invalid=False
-                    return
+                print("hello")
+                invalid=True
                 
     def updateDesign(self,conn):
 
