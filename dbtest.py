@@ -128,10 +128,10 @@ def engineer_menu(classConnect, conn,employeeid):
                                           classConnect.newDesign(conn)
                                     elif option1 == "2":
                                           valid_input1 = True
-                                          classConnect.viewInventory(conn)
+                                          classConnect.viewDesigns(conn)
                                     elif option1 == "3":
                                           valid_input1 = True
-                                          classConnect.updateModel(conn)
+                                          classConnect.updateDesign(conn)
                                     elif option1 == "4":
                                           valid_input = False
                                           break
@@ -147,7 +147,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                           classConnect.newModel(conn)
                                     elif option1 == "2":
                                           valid_input1 = True
-                                          classConnect.viewInventory(conn)
+                                          classConnect.viewModels(conn)
                                     elif option1 == "3":
                                           valid_input1 = True
                                           classConnect.updateModel(conn)
@@ -160,17 +160,14 @@ def engineer_menu(classConnect, conn,employeeid):
                               valid_input = True
                               print("Select an option (number): \n")
                               while valid_input1 == False: #loop until valid response
-                                    option1 = input("1. Add model to inventory\n2. Delete model from inventory\n3. View inventory\n4. Return to previous menu\n") #prompt user for option
+                                    option1 = input("1. Update inventory\n2. View inventory\n3. Return to previous menu\n") #prompt user for option
                                     if option1 == "1":
                                           valid_input1 = True
-                                          classConnect.newModel(conn)
+                                          classConnect.updateInventory(conn)
                                     elif option1 == "2":
-                                          valid_input1 == True
-                                          classConnect.deleteModel(conn)
-                                    elif option1 == "3":
                                           valid_input1 = True
                                           classConnect.viewInventory(conn)
-                                    elif option1 == "4":
+                                    elif option1 == "3":
                                           valid_input = False
                                           break
                                     else:
@@ -239,7 +236,7 @@ def sales_menu(classConnect, conn,employeeid):
                                           print("Please choose a valid option \n")
                         elif option == "3":
                               valid_input = True
-                              classConnect.viewReport(conn)
+                              classConnect.viewTotalRevenue(conn)
                         elif option == "4":
                               print("Logging out...")
                               classConnect.loginOut(conn)

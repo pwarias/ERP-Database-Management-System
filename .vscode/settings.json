@@ -1,7 +1,3 @@
 {
-<<<<<<< HEAD
-    "python.pythonPath": "C:\\Users\\Przemek\\AppData\\Local\\Programs\\Python\\Python37-32\\python.exe"
-=======
-    "python.pythonPath": "/opt/local/bin/python3.7"
->>>>>>> f0d7b9026bf762ee7b9ca25a63d6e1d169a289dc
+    "python.pythonPath": "C:\\Python34\\python.exe"
 }
