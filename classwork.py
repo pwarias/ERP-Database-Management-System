@@ -8,7 +8,7 @@ import datetime
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "5432"
+        self.port = "8081"
         self.database = "postgres"
         self.loginid = 0
 
@@ -246,20 +246,21 @@ class Connection:
     def deleteModel(self,conn):
         try:
             invalid = True
-            while(invalid==True):
-                try:
-                    myCursor = conn.cursor()
-                    delModel = input("What model would you like to delete: ")
-                    desId = input("What is the design id of this model: ")
-                    myCursor.execute("delete from model where designid=%s and modelname=%s", (desId,delModel))
-                    myCursor.execute("delete from inventory where modelname = %s", (delModel))
-                    conn.commit()
-                    print("Model %s has been deleted", (delModel))
+            myCursor = conn.cursor()
+            while invalid == True:
+                delModel = input("What model would you like to delete: ")
+                desId = input("What is the design ID of this model: ")
+                myCursor.execute("select modelname from model where designid=%s and modelname=%s", (desId, delModel))
+                confirm = myCursor.fetchall()
+                if confirm:
                     invalid = False
-                except(Exception, psycopg2.Error) as error:
-                            if error == 42704:
-                                print("Error occured",error)
-                                invalid = True
+                else:
+                    tryAgain = input("Model doesn't exist. Would you like to try again? (Y/N)")
+                    if tryAgain != "Y":
+                        return
+            myCursor.execute("delete from model where designid = %s and modelname = %s", (desId, delModel))
+            print("Model %s has been deleted", (delModel))
+            conn.commit()
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -678,7 +679,7 @@ class Connection:
                 elif menuSelect == "2":
                     valid_input = True
                     inventoryid = input("What inventory ID would you like to remove: ")
-                    invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %s",inventoryid)
+                    invenid = myCursor.execute("select inventoryid from inventory where inventoryid = %s",inventoryid)
                     inventvals = myCursor.fetchone()[0]
                     if inventoryid == inventvals:
                         myCursor.execute("delete from inventory where inventoryid = inventoryid")
