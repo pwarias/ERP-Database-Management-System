@@ -8,7 +8,7 @@ import datetime
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8080"
+        self.port = "8081"
         self.database = "postgres"
         self.loginid = 0
 
@@ -24,6 +24,7 @@ class Connection:
             date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
             role = self.roleCheck(conn)
+            print(self.loginid)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
             return conn
