@@ -266,7 +266,7 @@ def hr_menu(classConnect, conn,employeeid):
                                     if option1 == "1":
                                           valid_input1 = True
                                           goBack = False
-                                          classConnect.updateUser(conn)
+                                          classConnect.updateEmployee(conn)
                                     elif option1 == "2":
                                           valid_input1 = True
                                           goBack = False
