@@ -10,6 +10,7 @@ class Connection:
         self.host = "127.0.0.1"
         self.port = "8080"
         self.database = "postgres"
+        self.loginid = 0
 
     #Login/out function calls
     def loginIn(self,usrName,Pasword,employeeid):
@@ -20,24 +21,19 @@ class Connection:
                                     port = self.port,
                                     database = self.database)
             myCursor = conn.cursor()
-            currentTime = datetime.datetime.now()
-            date = int(currentTime.strftime("%Y%m%d"))
-            time = int(currentTime.strftime("%H%M%S"))
-            loginid = getMaxID(conn,'login','loginid')+1
-            myCursor.execute("Insert into login (loginid,privilege,logouttime,logintime,employeeid,logindate,logoutdate) \
-                             values (%d,%s,%d,%d,%d,%d,%d) ", (loginid,roleCheck(conn),0,time,employeeid,0))
+            time = datetime.datetime.now().time()
+            
+            role = self.roleCheck(conn)
+            myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
-            return conn,loginid
-        except(Exception, psycopg2.Error) as error:
-            print ("Error while connecting to PostgreSQL", error)
-            return
-    
-    def loginOut(self,conn,loginid):
-        myCursor = conn.cursor()
+            return conn
         LogoutTime = datetime.datetime.now()
         outDate = int(LogoutTime.strftime("%Y%m%d"))
         outTime = int(LogoutTime.strftime("%H%M%S"))
         myCursor.execute("update login set (logouttime,logoutdate)=(%d,%d) where loginid = %d",(outTime,outDate,loginid))
+        outdate = datetime.datetime.now().date()
+        outtime = datetime.datetime.now().time()
+        myCursor.execute("update login set (logouttime,logoutdate)=(%s,%s) where loginid = %s",(outtime,outdate,self.loginid))
         conn.commit()
         conn.close()
         print("PostgeSQL connection is closed")
@@ -102,7 +98,7 @@ class Connection:
                     if error == 42704:
                         print("User does not exit")
                     else:
-                        print("Error %d occured", error)
+                        print("Error %s occured", error)
                     return -1    
         else:
             print("Password did not match")
@@ -182,7 +178,7 @@ class Connection:
         while invalid == True:
             dsnNmbr = input("Please enter the design ID of the design that you would like to make a model \
                             and add to the inventory: ")
-            myCursor.execute("select designid from design where designid = %d", (dsnNmbr))
+            myCursor.execute("select designid from design where designid = %s", (dsnNmbr))
             doesExist = myCursor.fetchall()
             if doesExist:
                 invalid = False
@@ -552,17 +548,17 @@ class Connection:
             if menuSelect == "1":
                 valid_input = True
                 inventoryid = input("What inventory ID would you like to update: ")
-                invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %d",inventoryid)
+                invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %s",inventoryid)
                 inventvals = myCursor.fetchone()[0]
                 if inventoryid == inventvals:
                     newQuantity = input("What is the updated quantity: ")
-                    myCursor.execute("update inventory set quantity = newQuantity where inventoryid = %d", inventoryid)
+                    myCursor.execute("update inventory set quantity = newQuantity where inventoryid = %s", inventoryid)
                     conn.commit()
                     return
             elif menuSelect == "2":
                 valid_input = True
                 inventoryid = input("What inventory ID would you like to remove: ")
-                invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %d",inventoryid)
+                invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %s",inventoryid)
                 inventvals = myCursor.fetchone()[0]
                 if inventoryid == inventvals:
                     myCursor.execute("delete from inventory where inventoryid = inventoryid")
@@ -592,19 +588,19 @@ class Connection:
         myCursor = conn.cursor()
         ordernumber = getMaxID(conn,'order','ordernumber')+1
         custumerid = input("Enter the custumers ID number: ")
-        custIdCheck = myCursor.execute("select custumerid from customer where customerid = %d",custumerid)
+        custIdCheck = myCursor.execute("select custumerid from customer where customerid = %s",custumerid)
         custvals = myCursor.fetchall()
         if custvals:
             employeeid = input("Enter your employee ID number: ") 
             inventoryid = input("Enter the inventory ID you would like to purchase: ")
-            myCursor.execute("select quantity from inventory where inventoryid = %d",inventoryid)
+            myCursor.execute("select quantity from inventory where inventoryid = %s",inventoryid)
             checkInventory = myCursor.fetchone()[0]
             if checkInventory > 0:
-                myCursor.execute("select saleprice from inventory where inventoryid = %d",inventoryid)
+                myCursor.execute("select saleprice from inventory where inventoryid = %s",inventoryid)
                 saleprice = myCursor.fetchone()[0]
                 myCursor.execute("Insert into order (ordernumber,customerid,employeeid,saleprice,inventoryId) values ()")
                 conn.commit()
-                myCursor.execute("Update inventory set inventory = %d where inventoryid = %d",
+                myCursor.execute("Update inventory set inventory = %s where inventoryid = %s",
                                 (checkInventory-1,inventoryid))
                 conn.commit()
         return
@@ -615,16 +611,16 @@ class Connection:
         checkOderId = myCursor.fetchone()[0]
         if orderid == checkOderId:
             newInventoryId = input("What inventory ID would you like to change your order to: ")
-            myCursor.execute("select inventoryid from orders where orderid = %d", orderid)
+            myCursor.execute("select inventoryid from orders where orderid = %s", orderid)
             oldInventoryId = myCursor.fetchone()[0]
-            myCursor.execute("select quantity from inventory where inventoryid = %d", oldInventoryId)
+            myCursor.execute("select quantity from inventory where inventoryid = %s", oldInventoryId)
             oldInventoryQuantity = myCursor.fetchone()[0]
-            myCursor.execute("select quantity from inventory where inventoryid = %d",newInventoryId)
+            myCursor.execute("select quantity from inventory where inventoryid = %s",newInventoryId)
             checkInventory = myCursor.fetchone()[0]
             if checkInventory > 0:
-                myCursor.execute("update orders set quantity = %d where inventoryid = %d", (checkInventory-1,newInventoryId))
-                myCursor.execute("update orders set quantity = %d where inventoryid = %d", (oldInventoryQuantity+1,oldInventoryId))
-                myCursor.execute("update orders set inventoryid = %d where orderid = %d", (newInventoryId,orderid))
+                myCursor.execute("update orders set quantity = %s where inventoryid = %s", (checkInventory-1,newInventoryId))
+                myCursor.execute("update orders set quantity = %s where inventoryid = %s", (oldInventoryQuantity+1,oldInventoryId))
+                myCursor.execute("update orders set inventoryid = %s where orderid = %s", (newInventoryId,orderid))
             else:
                 print("This new item is out of stock")
 
@@ -658,7 +654,7 @@ class Connection:
     #Useful functions
     def getMaxID(self,conn,table,column):
         myCursor = conn.cursor()
-        myCursor.execute("select max(%s) from %s", (column,table))
+        myCursor.execute("select max(%s) from %s", (AsIs(column),AsIs(table)))
         maxID = myCursor.fetchone()
         if maxID:
             return maxID[0]
