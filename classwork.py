@@ -21,16 +21,19 @@ class Connection:
                                     port = self.port,
                                     database = self.database)
             myCursor = conn.cursor()
+            date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
-            
             role = self.roleCheck(conn)
+            print(self.loginid)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
             return conn
-        LogoutTime = datetime.datetime.now()
-        outDate = int(LogoutTime.strftime("%Y%m%d"))
-        outTime = int(LogoutTime.strftime("%H%M%S"))
-        myCursor.execute("update login set (logouttime,logoutdate)=(%d,%d) where loginid = %d",(outTime,outDate,loginid))
+        except(Exception, psycopg2.Error) as error:
+            print ("Error while connecting to PostgreSQL", error)
+            return
+    
+    def loginOut(self,conn):
+        myCursor = conn.cursor()
         outdate = datetime.datetime.now().date()
         outtime = datetime.datetime.now().time()
         myCursor.execute("update login set (logouttime,logoutdate)=(%s,%s) where loginid = %s",(outtime,outdate,self.loginid))
