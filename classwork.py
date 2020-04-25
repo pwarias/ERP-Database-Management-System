@@ -23,7 +23,6 @@ class Connection:
             myCursor = conn.cursor()
             date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
-            
             role = self.roleCheck(conn)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
@@ -257,19 +256,18 @@ class Connection:
                 conn.commit()
                 invalidemp = False
             except(Exception, psycopg2.Error) as error:
-                print("hello")
                 print(error)
         invalid=True
         while(invalid):
-            designid = self.getMaxID(conn,'design','designid')
+            designid = self.getMaxID(conn,'design','designid')+1
             try:
-                itemCost = input("Enter the items cost: ")
-                myCursor.execute("Insert into design (designid,employeeid,designrev) values (%s,%s,%s)", (designid,employeeID,itemCost))
+                designrev = input("Enter the items revision: ")
+                myCursor.execute("Insert into design values (%s,%s,%s)", (designid,employeeID,designrev))
                 conn.commit()
-                invalidemp = False
+                return
 
             except(Exception, psycopg2.Error) as error:
-                print("hello")
+                print(error)
                 invalid=True
                 
     def updateDesign(self,conn):
