@@ -301,8 +301,8 @@ class Connection:
     def updateDesign(self,conn):
         try:
             invalidDesign = True
+            designUp = input("What design are you updating: ")
             while(invalidemp):
-                designUp = input("What design are you updating: ")
                 try:
                     designCheck = myCursor.execute("Select designrev from design where designid = %s", designUp)
                     conn.commit()
@@ -310,6 +310,8 @@ class Connection:
                 except(Exception, psycopg2.Error) as error:
                     print(error)           
             return
+            newRev = self.getMaxID(conn,'design','designrev')
+            myCursor.execute("Update design set design")
             
         except KeyboardInterrupt:     
             self.loginOut(conn)
@@ -516,7 +518,6 @@ class Connection:
 
 
 
-    #Abdallah
     #Table function calls
     def updateTable(self, conn):
         #to prompt for table name

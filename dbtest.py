@@ -112,7 +112,6 @@ def admin_menu(classConnect, conn,employeeid):
 
 def engineer_menu(classConnect, conn,employeeid):
       try:
-<<<<<<< HEAD
             valid_input = False
             valid_input1 = False
             print("Select a menu (number): \n")
@@ -171,68 +170,6 @@ def engineer_menu(classConnect, conn,employeeid):
                         classConnect.employeeInfo(conn, classConnect.roleCheck(conn))
                   else:
                         print("Please choose a valid menu: \n")
-=======
-            goBack = True
-            while goBack == True:
-                  valid_input = False
-                  valid_input1 = False
-                  print("Select a menu (number): \n")
-                  while valid_input == False: #loop until valid response
-                        option = input("1. Models\n2. Inventory\n3. Employee Infromation\n4. Quit\n") #prompt user for option
-                        if option == "1":
-                              valid_input = True
-                              print("Select an option (number): \n")
-                              while valid_input1 == False: #loop until valid response
-                                    option1 = input("1. Create model\n2. View models\n3. Update model\n4. Return to previous menu\n") #prompt user for option
-                                    if option1 == "1":
-                                          valid_input1 = True
-                                          goBack = False
-                                          classConnect.newDesign(conn)
-                                    elif option1 == "2":
-                                          valid_input1 = True
-                                          goBack = False
-                                          classConnect.viewInventory(conn)
-                                    elif option1 == "3":
-                                          valid_input1 = True
-                                          goBack = False
-                                          classConnect.updateModel(conn)
-                                    elif option1 == "4":
-                                          valid_input = False
-                                          break
-                                    else:
-                                          print("Please choose a valid option \n")
-                        elif option == "2":
-                              valid_input = True
-                              print("Select an option (number): \n")
-                              while valid_input1 == False: #loop until valid response
-                                    option1 = input("1. Add model to inventory\n2. Delete model from inventory\n3. View inventory\n4. Return to previous menu\n") #prompt user for option
-                                    if option1 == "1":
-                                          valid_input1 = True
-                                          goBack = False
-                                          classConnect.newModel(conn)
-                                    elif option1 == "2":
-                                          valid_input1 == True
-                                          goBack = False
-                                          classConnect.deleteModel(conn)
-                                    elif option1 == "3":
-                                          valid_input1 = True
-                                          goBack = False
-                                          classConnect.viewInventory(conn)
-                                    elif option1 == "4":
-                                          valid_input = False
-                                          break
-                                    else:
-                                          print("Please choose a valid option \n")
-                        elif option == "3":
-                              valid_input = True
-                              classConnect.employeeInfo(conn, classConnect.roleCheck(conn))
-                        elif option == "4":
-                              print("Logging out...")
-                              classConnect.loginOut(conn)
-                              return
-                        else:
-                              print("Please choose a valid menu: \n")
->>>>>>> cb6acc6b141c7b3bfb5ce25c424e7cced442b328
       except KeyboardInterrupt:
                   classConnect.loginOut(conn)
 
