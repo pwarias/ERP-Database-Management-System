@@ -189,15 +189,15 @@ class Connection:
                 if tryAgain != "Y":
                     return
         name = input("Please enter a name for this model: ")
-        cost = input("Please enter how much it cost for this model to be manufactured: ")
-        price = input("Please enter a price for this model: ")
+        cost = input("Please enter how much this item cost to manufacture: ")
+        price = input("Please enter how much this item will sell for: ")
         time = input("Please enter how long it took to manufacturer this model in days: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
-        invId = getMaxID(conn,'inventory','inventoryid')+1
-        myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
+        invId = self.getMaxID(conn,'inventory','inventoryid')+1
+        myCursor.execute("insert into Model values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
         conn.commit()
-        myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
+        myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s, %s, %s)", (invId, price, category, name, quantity))
         conn.commit()
 
     def updateModel(self, conn):
