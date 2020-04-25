@@ -72,12 +72,15 @@ class Connection:
                         myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
                         print("New User has been added")
+                        print("New user: %s Password: %s" % (usrName, Password))
+                        self.newEmployee(conn)
                         invalid=False
                     except(Exception,psycopg2.Error) as error:
                         if error == 42710: #User does not exist 
                             print("User already exist, try a new username")
                         else:
                             print("Error : ", str(error))
+                            conn.commit()
                 else:
                     print("Passwords do not match, please try again")
             return
@@ -321,16 +324,19 @@ class Connection:
     def newEmployee(self,conn):
         try:
             myCursor = conn.cursor()
-            employeeid = getMaxID(conn,'employee','employeeid')+1
+            employeeid = self.getMaxID(conn,'employee','employeeid')+1
             firstname = input("Enter the Employees first mame: ")
             lastname = input("Enter the Employees last name: ")
             ssn = input("Enter the Employees ssn: ")
             paytype = input("Enter the Employees paytype: ")
             jobtype = input("Enter the Employees job type: ")
             salary = input("Ennter the Employees salary: ")
-            myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype,salary) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype,salary))
+            myCursor.execute("Insert into employee (employeeid,firstname,lastname,ssn,paytype,jobtype,salary) values (%s,%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype,salary))
+            print("employee created successfully, employee id: %s" % (employeeid))
+            conn.commit()
             return
-        except KeyboardInterrupt:     
+        except(KeyboardInterrupt, Exception, psycopg2.Error) as error:
+            print(error)     
             classConnect.loginOut(conn)
 
     def updateEmployee(self,conn):
