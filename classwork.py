@@ -8,7 +8,7 @@ import datetime
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8080"
+        self.port = "5432"
         self.database = "postgres"
         self.loginid = 0
 
@@ -23,8 +23,8 @@ class Connection:
             myCursor = conn.cursor()
             date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
+            
             role = self.roleCheck(conn)
-            print(self.loginid)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
             return conn
@@ -130,11 +130,11 @@ class Connection:
         if duplicateName:
             ques = input("Customer with that name already exists. Is this a different customer with the same name? (Y/N)")
             if ques == "Y":
-                cId = getMaxID(conn,'customer','customerid')+1
+                cId = self.getMaxID(conn,'customer','customerid')+1
                 myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
                 conn.commit()
         else:
-            cId = getMaxID(conn,'customer','customerid')+1 
+            cId = self.getMaxID(conn,'customer','customerid')+1 
             myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
             conn.commit()
     def updateCustomer(self,conn):
@@ -195,29 +195,12 @@ class Connection:
         time = input("Please enter how long it took to manufacturer this model in days: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
-        invId = getMaxID(conn,'inventory','inventoryid')+1
+        invId = self.getMaxID(conn,'inventory','inventoryid')+1
         myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
         conn.commit()
         myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
         conn.commit()
 
-    def updateModel(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the model number of the model: ")
-                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
-                newCost=input("Please enter the new cost of the model: ") #error checking
-                newLead=input("Please enter the new lead time: ")
-                newDesign=input("Please enter the new designId: ")
-                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
-                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
-                conn.commit() #should include after all executions
-                invalid=False
-
-            except:
-                print("Error: model number not found")
 
     def deleteModel(self,conn):
         invalid = True
@@ -250,30 +233,29 @@ class Connection:
     #Design function calls- verify why the double employee id check
     def newDesign(self,conn):
         myCursor = conn.cursor()
-        employeeID = input("Enter your employee ID: ")
-        myCursor.execute("Select employeeId from employee where employeeId='%s'", employeeID)
-        checkempID = myCursor.fetchall()
-        invalid=True
         invalidemp = True
+        while(invalidemp):
+            employeeID = input("Enter your employee ID: ")
+            try:
+                empCheck = myCursor.execute("Select employeeid from employee where employeeid = %s", employeeID)
+                invalidemp = False
+            except(Exception, psycopg2.Error) as error:
+                print(error)
+        invalid=True
         while(invalid):
-            if employeeID == checkempID[0]:
-                #is there something supposed to be here?
-                while(invalid):
-                    modelNumber = input("Enter the new model number: ")
-                    try:
-                        myCursor.execute("Select modelNumber from model where modelNumber=%s", modelNumber)#should throw an error
-                        conn.commit()
-                        print("Please try another model number") 
+            designid = self.getMaxID(conn,'design','designid')
+            try:
+                print("hello")
+                myCursor.execute("Select designid from design where designid=%s", designid)#should throw an error
+                itemCost = input("Enter the items cost: ")
+                myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID, modelNumber,itemCost))
+                conn.commit()
 
-                    except(Exception, psycopg2.Error) as error:
-                        if error == '02':
-                            itemCost = input("Enter the items cost: ")
-                            myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
-                            conn.commit()
-                            invalid=False
-                            return
-            else:
-                print("Invalid Employee id")
+            except(Exception, psycopg2.Error) as error:
+                if error:
+                    invalid=False
+                    return
+                
     def updateDesign(self,conn):
 
         return
@@ -293,7 +275,7 @@ class Connection:
     #Employee function calls
     def newEmployee(self,conn):
         myCursor = conn.cursor()
-        employeeid = getMaxID(conn,'employee','employeeid')+1
+        employeeid = self.getMaxID(conn,'employee','employeeid')+1
         firstname = input("Enter the Employees first mame: ")
         lastname = input("Enter the Employees last name: ")
         ssn = input("Enter the Employees ssn: ")
@@ -462,42 +444,7 @@ class Connection:
                 print("Error: model number not found")
 
         return
-   ''' def updateInventory(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the inventory id: ")
-                myCursor.execute("Select inventoryId from inventory where inventoryId='%s'", (id, ))
-                newPrice=input("Please enter the new sales price: ")
-                newQuantity=input("Please enter the new quantity: ")
-                sql="UPDATE inventory SET saleprice=%s, quantity=%s WHERE inventoryId=%s"
-                myCursor.execute(sql, (newPrice, newQuantity, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
 
-
-        return
-    def updateEmployee(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the employee id: ")
-                myCursor.execute("Select employeeId from employee where employeeId='%s'", (id, ))
-                #updates can be made more granular
-                newFirst=input("Please enter the employee's new first name: ")
-                newLast=input("Please enter the employee's new last name: ")
-                newPayType=input("Please enter the employee's new pay type: ")
-                #newSalary=input("Please enter the employee's new pay type: ")
-                sql="UPDATE employee SET firtname=%s, lastname=%s, paytype=%s WHERE employeeId=%s"
-                myCursor.execute(sql, (newFirst, newLast, newPayType, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
-
-
-        return
-'''
     #Abdallah
     #Table function calls
     def updateTable(self, conn):
@@ -639,7 +586,7 @@ class Connection:
     #Order function calls
     def createOrder(self,conn):
         myCursor = conn.cursor()
-        ordernumber = getMaxID(conn,'order','ordernumber')+1
+        ordernumber = self.getMaxID(conn,'order','ordernumber')+1
         custumerid = input("Enter the custumers ID number: ")
         custIdCheck = myCursor.execute("select custumerid from customer where customerid = %s",custumerid)
         custvals = myCursor.fetchall()
@@ -681,7 +628,6 @@ class Connection:
         return
     def deleteOrder(self,conn):
         myCursor = conn.cursor()
-        orderid
         return
 
     def viewOrders(self,conn):
@@ -713,32 +659,8 @@ class Connection:
             return maxID[0]
         return 1
     
-<<<<<<< HEAD
+ 
     def roleCheck(self, conn):
-      cur = conn.cursor()
-      cur.execute('''SELECT current_user;''')
-      rows=cur.fetchall()
-      currentUser=rows[0]  #grab username
-     
-      query="SELECT rolname FROM pg_roles WHERE pg_has_role( (%s), oid, 'member');" #see which role the user has
-      cur.execute(query, currentUser)
-      rows=cur.fetchall()
-      roleType=[]
-      for i in range(len(rows)-1):
-            roleType.append(''.join(rows[i]))
-      #print(roleType) all roles including inherited types, excludes name
-
-      #assume that emplyees can't have more than one role (not including inherited)
-      return roleType[len(roleType)-1] #the last role will contain the actual role of the user
-
-
-      conn.commit()
-=======
-<<<<<<< HEAD
-    def roleCheck(self,conn):
-=======
-    def roleCheck(self, conn):
->>>>>>> a76e1fef07abb010fa57b2150937a9c15327e48c
         cur = conn.cursor()
         cur.execute('''SELECT current_user;''')
         rows=cur.fetchall()
@@ -757,5 +679,5 @@ class Connection:
 
 
         conn.commit()
->>>>>>> c63337b9f8831f1c4a8b6a574763bda8d46b8c98
+
     

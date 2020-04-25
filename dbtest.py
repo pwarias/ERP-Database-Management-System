@@ -8,10 +8,10 @@ def mainMenu():
             username = input("Please enter your username: ")
             passwrd = input("Please enter your password: ")
             employeeid = input("What is your employee id: ")
-            conn1 = psycopg2.connect(user = 'postgres',
-                                    password = 'Yaysql37',
+            conn1 = psycopg2.connect(user = 'idcheck',
+                                    password = 'gettheid3',
                                     host = '127.0.0.1',
-                                    port = 8081,
+                                    port = 5432,
                                     database = 'postgres')
             #call one of the following menus after verifying login info
             #call permisionCheck() to then call correspodning menu
@@ -31,7 +31,7 @@ def mainMenu():
                   else:
                         print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
             except KeyboardInterrupt:
-                  classConnect.loginOut(conn,employeeid,classConnect.roleCheck(conn))
+                  classConnect.loginOut(conn)
 
 
 def admin_menu(classConnect, conn,employeeid):
@@ -40,10 +40,11 @@ def admin_menu(classConnect, conn,employeeid):
             valid_input1 = False
             print("Select a menu (number): \n")
             while valid_input == False: #loop until valid response
-                  option = input("1. Users \n2. Tables \n3. Reports \n4. View Employees:") #prompt user for option
+                  print("1. Users \n2. Tables \n3. Reports \n4. View Employees") #prompt user for option
+                  option = input("Select an option (number): \n")
                   if option == "1":
                         valid_input = True
-                        print("Select an option (number): \n")
+                        
                         while valid_input1 == False: #loop until valid response
                               option1 = input("1. Create user \n 2. Update user \n") #prompt user for option
                               if option1 == "1":
@@ -133,7 +134,7 @@ def engineer_menu(classConnect, conn,employeeid):
                   else:
                         print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
-                  classConnect.loginOut(conn,employeeid,classConnect.roleCheck(conn))
+                  classConnect.loginOut(conn)
 
 def sales_menu(classConnect, conn,employeeid):
       try:
@@ -179,11 +180,11 @@ def sales_menu(classConnect, conn,employeeid):
                                     print("Please choose a valid option \n")
                   elif option == "3":
                         valid_input = True
-                        classConnect.viewTotalRevenur(conn)
+                        classConnect.viewReport(conn)
                   else:
                         print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
-                  classConnect.loginOut(conn,employeeid,classConnect.roleCheck(conn))
+                  classConnect.loginOut(conn)
 
 def hr_menu(classConnect, conn,employeeid):
       try:
@@ -191,7 +192,7 @@ def hr_menu(classConnect, conn,employeeid):
             valid_input1 = False
             print("Select a menu (number): \n")
             while valid_input == False: #loop until valid response
-                  option = input("1. Employee information") #prompt user for option
+                  option = input("1. Employee information \n 2. idk \n") #prompt user for option
                   if option == "1":
                         valid_input = True
                         print("Select an option (number): \n")
@@ -205,9 +206,12 @@ def hr_menu(classConnect, conn,employeeid):
                                     classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
                               else:
                                     print("Please choose a valid option \n")
+                  elif option == "2":
+                        valid_input = True
+                        print("working on this") #idk
                   else:
                         print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
-                  classConnect.loginOut(conn,employeeid,classConnect.roleCheck(conn))              
+                  classConnect.loginOut(conn)              
 
 mainMenu()
