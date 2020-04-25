@@ -85,7 +85,7 @@ class Connection:
                     print("Passwords do not match, please try again")
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def updateUser(self,conn): #updated so no recursive calls
         try:
@@ -114,7 +114,7 @@ class Connection:
                 print("Password did not match")
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -148,7 +148,7 @@ class Connection:
                 myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
                 conn.commit()
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
     def updateCustomer(self,conn):
         try:
             myCursor = conn.cursor()
@@ -168,7 +168,7 @@ class Connection:
             myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
             conn.commit()
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
     def viewCustomers(self,conn):
         try:
             print("Customer ID\tFirst Name\tLast Name")
@@ -178,7 +178,7 @@ class Connection:
             for i in range(len(all)):
                 print(allCust[i][0], "\t\t", allCust[i][1], "\t\t", allCust[i][2])
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -220,7 +220,7 @@ class Connection:
             myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s, %s, %s)", (invId, price, category, name, quantity))
             conn.commit()
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def updateModel(self, conn):
         try:
@@ -241,7 +241,7 @@ class Connection:
                 except:
                     print("Error: model number not found")
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def deleteModel(self,conn):
         try:
@@ -260,7 +260,7 @@ class Connection:
                                 print("Error occured",error)
                                 invalid = True
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -299,13 +299,23 @@ class Connection:
                     print(error)
                     invalid=True
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
                 
     def updateDesign(self,conn):
         try:
+            invalidDesign = True
+            while(invalidemp):
+                designUp = input("What design are you updating: ")
+                try:
+                    designCheck = myCursor.execute("Select designrev from design where designid = %s", designUp)
+                    conn.commit()
+                    invalidDesign = False
+                except(Exception, psycopg2.Error) as error:
+                    print(error)           
             return
+            
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
         return
     
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -379,7 +389,7 @@ class Connection:
                 else:
                     print("Please choose a valid option")
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def employeeInfo(self,conn,jobtype):
         try:
@@ -403,7 +413,7 @@ class Connection:
                 for i in range(len(employees)):
                     print(employees[i][0], "\t\t", employees[i][1], "\t\t", employees[i][2], employees[i][3])
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -426,7 +436,7 @@ class Connection:
             sql="create or replace view total_revenue as select employeeid, customerid, sum(saleprice) from orders group by employeeid, customerid;"
             myCursor.execute(sql)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def createCustomerPrediction(self, conn): #Neeeds testing
         #Customer model bought and quantity to make prediction and understand trending
@@ -435,7 +445,7 @@ class Connection:
             sql= "create view customer_prediction as select orders.customerid, inventory.modelname, count(orders) from orders, inventory group by customerid, modelname;"
             myCursor.execute(sql)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def createOrderInentory(self, conn): #Neeeds testing
         #For each order, the associated parts and available inventory
@@ -444,7 +454,7 @@ class Connection:
             sql="create or replace view parts as select orders.ordernumber, inventory.modelname, inventory.quantity from orders, inventory;"
             myCursor.execute(sql)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def viewExpenseReport(self, conn): #Neeeds testing
         #Expense report, employee showing salary, bonus expense and part cost
@@ -469,7 +479,7 @@ class Connection:
             print("cost for the hourly employee's working 40 hour workweeks 52 weeks a year: ")
             print(hourlyCost)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def viewTotalRevenue(self,conn): #Neeeds testing
         try:
@@ -479,7 +489,7 @@ class Connection:
             totalRev=myCursor.fetchall()
             print(totalRev)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def viewCustomerPrediction(self,conn): #Neeeds testing
         try:
@@ -489,7 +499,7 @@ class Connection:
             custPred=myCursor.fetchall()
             print(custPred)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def viewOrderInventory(self,conn): #Neeeds testing
         try:
@@ -499,7 +509,7 @@ class Connection:
             parts=myCursor.fetchall()
             print(parts)
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def newTable(self,conn): #checked with Ola likely not needed
         myCursor = conn.cursor()
@@ -597,7 +607,7 @@ class Connection:
                     if tryAgain != "Y":
                         return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -622,7 +632,7 @@ class Connection:
                 print(allInv[i][0], "\t\t", allInv[i][1], "\t\t", allInv[i][2], "\t\t", allInv[i][3], "\t\t", allInv[i][4])
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def updateInventory(self,conn):
         try:
@@ -655,7 +665,7 @@ class Connection:
                     if tryAgain != "Y":
                         return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 
 
@@ -694,7 +704,7 @@ class Connection:
                     conn.commit()
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
     def updateOrder(self,conn):
         try:
             myCursor = conn.cursor()
@@ -717,7 +727,7 @@ class Connection:
                     print("This new item is out of stock")
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def deleteOrder(self,conn):
         try:
@@ -725,7 +735,7 @@ class Connection:
             orderid
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def viewOrders(self,conn):
         try:
@@ -737,7 +747,7 @@ class Connection:
                 print(orders[i][0], "\t\t", orders[i][1], "\t\t", orders[i][2], "\t\t", orders[i][3], "\t\t", orders[i][4])
             return
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -760,7 +770,7 @@ class Connection:
                 return maxID[0]
             return 1
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
     
  
     def roleCheck(self, conn):
@@ -784,5 +794,5 @@ class Connection:
 
             conn.commit()
         except KeyboardInterrupt:     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
     
