@@ -24,7 +24,6 @@ class Connection:
             date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
             role = self.roleCheck(conn)
-            print(self.loginid)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
             return conn
@@ -300,18 +299,20 @@ class Connection:
                 
     def updateDesign(self,conn):
         try:
+            myCursor = conn.cursor()
             invalidDesign = True
             designUp = input("What design are you updating: ")
-            while(invalidemp):
+            while(invalidDesign):
                 try:
-                    designCheck = myCursor.execute("Select designrev from design where designid = %s", designUp)
+                    designCheck = myCursor.execute("Select designid from design where designid = %s", designUp)
                     conn.commit()
                     invalidDesign = False
                 except(Exception, psycopg2.Error) as error:
                     print(error)           
-            return
-            newRev = self.getMaxID(conn,'design','designrev')
-            myCursor.execute("Update design set design")
+            myCursor.execute("select designrev from design where designid = %s", designUp)
+            newRev = myCursor.fetchone()[0] + 1
+            myCursor.execute("Update design set designrev = %s where designid = %s", (newRev,designUp))
+            conn.commit()
             
         except KeyboardInterrupt:     
             self.loginOut(conn)

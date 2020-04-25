@@ -132,7 +132,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                           classConnect.viewInventory(conn)
                                     elif option1 == "3":
                                           valid_input1 = True
-                                          classConnect.updateModel(conn)
+                                          classConnect.updateDesign(conn)
                                     elif option1 == "4":
                                           valid_input = False
                                           break
