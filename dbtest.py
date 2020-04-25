@@ -95,12 +95,12 @@ def engineer_menu(classConnect, conn,employeeid):
             valid_input1 = False
             print("Select a menu (number): \n")
             while valid_input == False: #loop until valid response
-                  option = input("1. Models \n 2. Inventory \n 3. Employee Infromation \n") #prompt user for option
+                  option = input("1. Design \n 2. Model \n 3. Inventory \n 4. Employee Infromation \n") #prompt user for option
                   if option == "1":
                         valid_input = True
                         print("Select an option (number): \n")
                         while valid_input1 == False: #loop until valid response
-                              option1 = input("1. Create model \n 2. View models \n 3. Update model \n") #prompt user for option
+                              option1 = input("1. Create design \n 2. View designs \n 3. Update design \n") #prompt user for option
                               if option1 == "1":
                                     valid_input1 = True
                                     classConnect.newDesign(conn)
@@ -112,7 +112,23 @@ def engineer_menu(classConnect, conn,employeeid):
                                     classConnect.updateModel(conn)
                               else:
                                     print("Please choose a valid option \n")
-                  elif option == "2":
+                  if option == "2":
+                        valid_input = True
+                        print("Select an option (number): \n")
+                        while valid_input1 == False: #loop until valid response
+                              option1 = input("1. Create Model \n 2. View Models \n 3. Update Model \n") #prompt user for option
+                              if option1 == "1":
+                                    valid_input1 = True
+                                    classConnect.newModel(conn)
+                              elif option1 == "2":
+                                    valid_input1 = True
+                                    classConnect.viewInventory(conn)
+                              elif option1 == "3":
+                                    valid_input1 = True
+                                    classConnect.updateModel(conn)
+                              else:
+                                    print("Please choose a valid option \n")
+                  elif option == "3":
                         valid_input = True
                         print("Select an option (number): \n")
                         while valid_input1 == False: #loop until valid response
@@ -128,7 +144,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                     classConnect.viewInventory(conn)
                               else:
                                     print("Please choose a valid option \n")
-                  elif option == "3":
+                  elif option == "4":
                         valid_input = True
                         classConnect.employeeInfo(conn, classConnect.roleCheck(conn))
                   else:
