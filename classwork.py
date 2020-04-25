@@ -179,8 +179,6 @@ class Connection:
     #Model function calls
     def newModel(self,conn):
         myCursor = conn.cursor()
-<<<<<<< HEAD
-=======
         invalid = True
         while invalid == True:
             dsnNmbr = input("Please enter the design ID of the design that you would like to make a model \
@@ -204,9 +202,7 @@ class Connection:
         conn.commit()
         myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
         conn.commit()
-    def updateModel(self,conn): 
-        myCursor = conn.cursor()
-        return
+   
     def deleteModel(self,conn):
         invalid = True
         while(invalid):
@@ -222,7 +218,6 @@ class Connection:
                         if error == 42704:
                             print("Error occured",error)
                             invalid = True
->>>>>>> 41670a257cfd3179cf768ed3c94e128ebc7e22d4
         return
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -276,17 +271,6 @@ class Connection:
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-<<<<<<< HEAD
-                except(Exception, psycopg2.Error) as error:
-                    if error == '02':
-                        itemCost = input("Enter the items cost: ")
-                        myCursor.execute("Insert into model (employeeid,costnumber,modelcost) values (%s,%s,%s)", (employeeID,modelNumber,itemCost))
-                        invalid=False
-                        return
-        else:
-            print("Invalid Employee id")#check what this might be for
-=======
->>>>>>> 41670a257cfd3179cf768ed3c94e128ebc7e22d4
 
     #Employee function calls
     def newEmployee(self,conn):
@@ -447,7 +431,6 @@ class Connection:
     def newTable(self,conn): #checked with Ola likely not needed
         myCursor = conn.cursor()
         return
-<<<<<<< HEAD
     def updateModel(self, conn):
         myCursor = conn.cursor()
         invalid=True
@@ -485,7 +468,7 @@ class Connection:
                 print("Error: Inventory Id not found")
 
         return
-    def updateEmployee(self, conn):
+   ''' def updateEmployee(self, conn):
         myCursor = conn.cursor()
         invalid=True
         while(invalid):
@@ -506,8 +489,7 @@ class Connection:
                 print("Error: Inventory Id not found")
 
         return
-=======
-
+'''
     #Abdallah
     #Table function calls
     def newTable(self, conn):
@@ -567,7 +549,6 @@ class Connection:
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
->>>>>>> 41670a257cfd3179cf768ed3c94e128ebc7e22d4
 
     #Inventory function calls
     def viewInventory(self,conn):
@@ -683,7 +664,7 @@ class Connection:
             return maxID[0]
         return 1
     
-    def roleCheck(conn):
+    def roleCheck(self, conn):
       cur = conn.cursor()
       cur.execute('''SELECT current_user;''')
       rows=cur.fetchall()
