@@ -3,36 +3,35 @@ import classwork
 
 def mainMenu():
       
-      #we could also query db for the users role and display options based on that?
-      print("Welcome to the ERP DBMS!\n\nMain Menu")
-      username = input("Please enter your username: ")
-      passwrd = input("Please enter your password: ")
-      employeeid = input("What is your employee id: ")
-      conn1 = psycopg2.connect(user = 'idcheck',
-                              password = 'gettheid3',
-                              host = '127.0.0.1',
-                              port = 8081,
-                              database = 'postgres')
-      
-      #call one of the following menus after verifying login info
-      #call permisionCheck() to then call correspodning menu
-      classConnect = classwork.Connection()
-      classConnect.loginid = classConnect.getMaxID(conn1,'login','loginid')+1
-      conn = classConnect.loginIn(username, passwrd,employeeid)
-      role = classConnect.roleCheck(conn)
-      try:
-            if role == "admins" or role == "postgres":
-                  admin_menu(classConnect, conn,employeeid)
-            elif role == "engineer":
-                  engineer_menu(classConnect, conn,employeeid)
-            elif role == "sales":
-                  sales_menu(classConnect, conn,employeeid)
-            elif role == "hr":
-                  hr_menu(classConnect, conn,employeeid)
-            else:
-                  print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
-      except KeyboardInterrupt:
-            classConnect.loginOut(conn)
+            #we could also query db for the users role and display options based on that?
+            print("Welcome to the ERP DBMS!\n\nMain Menu")
+            username = input("Please enter your username: ")
+            passwrd = input("Please enter your password: ")
+            employeeid = input("What is your employee id: ")
+            conn1 = psycopg2.connect(user = 'idcheck',
+                                    password = 'gettheid3',
+                                    host = '127.0.0.1',
+                                    port = 5432,
+                                    database = 'postgres')
+            #call one of the following menus after verifying login info
+            #call permisionCheck() to then call correspodning menu
+            classConnect = classwork.Connection()
+            classConnect.loginid = classConnect.getMaxID(conn1,'login','loginid')+1
+            conn = classConnect.loginIn(username, passwrd,employeeid)
+            role = classConnect.roleCheck(conn)
+            try:
+                  if role == "admins" or role=="postgres":
+                        admin_menu(classConnect, conn,employeeid)
+                  elif role == "engineer":
+                        engineer_menu(classConnect, conn,employeeid)
+                  elif role == "sales":
+                        sales_menu(classConnect, conn,employeeid)
+                  elif role == "hr":
+                        hr_menu(classConnect, conn,employeeid)
+                  else:
+                        print("if you're reading this, something went wrong, check 'mainMenu()' in dbtest.py") 
+            except KeyboardInterrupt:
+                  classConnect.loginOut(conn)
 
 
 def admin_menu(classConnect, conn,employeeid):

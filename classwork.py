@@ -8,7 +8,7 @@ import datetime
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8081"
+        self.port = "5432"
         self.database = "postgres"
         self.loginid = 0
 
@@ -72,12 +72,15 @@ class Connection:
                         myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
                         print("New User has been added")
+                        print("New user: %s Password: %s" % (usrName, Password))
+                        self.newEmployee(conn)
                         invalid=False
                     except(Exception,psycopg2.Error) as error:
                         if error == 42710: #User does not exist 
                             print("User already exist, try a new username")
                         else:
                             print("Error : ", str(error))
+                            conn.commit()
                 else:
                     print("Passwords do not match, please try again")
             return
@@ -349,21 +352,26 @@ class Connection:
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
+
+
     #Employee function calls
     def newEmployee(self,conn):
         try:
             myCursor = conn.cursor()
-            employeeid = getMaxID(conn,'employee','employeeid')+1
+            employeeid = self.getMaxID(conn,'employee','employeeid')+1
             firstname = input("Enter the Employees first mame: ")
             lastname = input("Enter the Employees last name: ")
             ssn = input("Enter the Employees ssn: ")
             paytype = input("Enter the Employees paytype: ")
             jobtype = input("Enter the Employees job type: ")
             salary = input("Ennter the Employees salary: ")
-            myCursor.execute("Insert into Employee (employeeid,firstname,lastname,ssn,paytype,jobtype,salary) values (%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype,salary))
+            myCursor.execute("Insert into employee (employeeid,firstname,lastname,ssn,paytype,jobtype,salary) values (%s,%s,%s,%s,%s,%s,%s)", (employeeid,firstname,lastname,ssn,paytype,jobtype,salary))
+            print("employee created successfully, employee id: %s" % (employeeid))
+            conn.commit()
             return
-        except KeyboardInterrupt:     
-            self.loginOut(conn)
+        except(KeyboardInterrupt, Exception, psycopg2.Error) as error:
+            print(error)     
+            classConnect.loginOut(conn)
 
     def updateEmployee(self,conn):
         try:
@@ -527,18 +535,28 @@ class Connection:
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
+    def newTable(self,conn): #checked with Ola likely not needed
+        myCursor = conn.cursor()
+        return
+    def updateModel(self, conn):
+        myCursor = conn.cursor()
+        invalid=True
+        while(invalid):
+            try:
+                id=input("Please enter the model number of the model: ")
+                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
+                newCost=input("Please enter the new cost of the model: ") #error checking
+                newLead=input("Please enter the new lead time: ")
+                newDesign=input("Please enter the new designId: ")
+                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
+                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
+                myCursor.commit() #should include after all executions
+                invalid=False
 
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+            except:
+                print("Error: model number not found")
 
-
+        return
 
     #Abdallah
     #Table function calls
@@ -778,6 +796,7 @@ class Connection:
         except KeyboardInterrupt:     
             self.loginOut(conn)
     
+ 
     def roleCheck(self, conn):
         try:
             cur = conn.cursor()
