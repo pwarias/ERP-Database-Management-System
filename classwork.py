@@ -20,7 +20,7 @@ class Connection:
                                     port = self.port,
                                     database = self.database)
             myCursor = conn.cursor()
-            currentTime = datetime.datatime.now()
+            currentTime = datetime.datetime.now()
             date = int(currentTime.strftime("%Y%m%d"))
             time = int(currentTime.strftime("%H%M%S"))
             loginid = getMaxID(conn,'login','loginid')+1
@@ -34,7 +34,7 @@ class Connection:
     
     def loginOut(self,conn,loginid):
         myCursor = conn.cursor()
-        LogoutTime = datetime.datatime.now()
+        LogoutTime = datetime.datetime.now()
         outDate = int(LogoutTime.strftime("%Y%m%d"))
         outTime = int(LogoutTime.strftime("%H%M%S"))
         myCursor.execute("update login set (logouttime,logoutdate)=(%d,%d) where loginid = %d",(outTime,outDate,loginid))

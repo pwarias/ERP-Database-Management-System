@@ -18,7 +18,7 @@ def mainMenu():
             loginid = connReturn[1]
             role = classConnect.roleCheck(conn)
             try:
-                  if role == "admins" or role=="postgres":
+                  if role == "admins" or role == "postgres":
                         admin_menu(classConnect, conn,employeeid,loginid)
                   elif role == "engineer":
                         engineer_menu(classConnect, conn,employeeid,loginid)
@@ -34,55 +34,76 @@ def mainMenu():
 
 def admin_menu(classConnect, conn,employeeid,loginid):
       try:
-            valid_input = False
-            valid_input1 = False
-            print("Select a menu (number): \n")
-            while valid_input == False: #loop until valid response
-                  option = input("1. Users \n2. Tables \n3. Reports \n4. View Employees:") #prompt user for option
-                  if option == "1":
-                        valid_input = True
-                        print("Select an option (number): \n")
-                        while valid_input1 == False: #loop until valid response
-                              option1 = input("1. Create user \n 2. Update user \n") #prompt user for option
-                              if option1 == "1":
-                                    valid_input1 = True
-                                    classConnect.newUser(conn)
-                              elif option1 == "2": #this is also for granting access to other users
-                                    valid_input1 == True
-                                    classConnect.updateUser(conn)
-                              else:
-                                    print("Please choose a valid option \n")
-                  elif option == "2":
-                        valid_input = True
-                        print("Select an option (number): \n")
-                        while valid_input1 == False: #loop until valid response
-                              option1 = input("1. Create table \n 2. Update table \n") #prompt user for option
-                              if option1 == "1":
-                                    valid_input1 = True
-                                    classConnect.newTable(conn)
-                              elif option1 == "2":
-                                    valid_input1 == True
-                                    classConnect.updateTable(conn)
-                              else:
-                                    print("Please choose a valid option \n")
-                  elif option == "3":
-                        valid_input = True
-                        print("Select an option (number): \n")
-                        while valid_input1 == False: #loop until valid response
-                              option1 = input("1. Create report \n 2. View report \n") #prompt user for option
-                              if option1 == "1":
-                                    valid_input1 = True
-                                    classConnect.createReport(conn)
-                              elif option1 == "2":
-                                    valid_input1 == True
-                                    classConnect.viewReport(conn)
-                              else:
-                                    print("Please choose a valid option \n")
-                  elif option == "4":
-                        valid_input = True
-                        classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
-                  else:
-                        print("Please choose a valid menu: \n")
+            goBack = True
+            while goBack == True:
+                  valid_input = False
+                  valid_input1 = False
+                  print("Select a menu (number): \n")
+                  while valid_input == False: #loop until valid response
+                        option = input("1. Users \n2. Tables \n3. Reports \n4. View Employees\n5. Quit\n") #prompt user for option
+                        if option == "1":
+                              valid_input = True
+                              print("Select an option (number): \n")
+                              while valid_input1 == False: #loop until valid response
+                                    option1 = input("1. Create user\n2. Update user\n3. Return to previous menu\n") #prompt user for option
+                                    if option1 == "1":
+                                          valid_input1 = True
+                                          goBack = False
+                                          classConnect.newUser(conn)
+                                    elif option1 == "2": #this is also for granting access to other users
+                                          valid_input1 = True
+                                          goBack = False
+                                          classConnect.updateUser(conn)
+                                    elif option1 == "3": #break out of current while loop and go to the first while loop
+                                          valid_input = False
+                                          break
+                                    else:
+                                          print("Please choose a valid option \n")
+                        elif option == "2":
+                              valid_input = True
+                              print("Select an option (number): \n")
+                              while valid_input1 == False: #loop until valid response
+                                    option1 = input("1. Create table \n 2. Update table \n3. Return to previous menu\n") #prompt user for option
+                                    if option1 == "1":
+                                          valid_input1 = True
+                                          goBack = False
+                                          classConnect.newTable(conn)
+                                    elif option1 == "2":
+                                          valid_input1 == True
+                                          goBack = False
+                                          classConnect.updateTable(conn)
+                                    elif option1 == "3":#break out of current while loop and go to the first while loop
+                                          valid_input = False
+                                          break
+                                    else:
+                                          print("Please choose a valid option \n")
+                        elif option == "3":
+                              valid_input = True
+                              print("Select an option (number): \n")
+                              while valid_input1 == False: #loop until valid response
+                                    option1 = input("1. Create report \n 2. View report \n3. Return to previous menu\n") #prompt user for option
+                                    if option1 == "1":
+                                          valid_input1 = True
+                                          goBack = False
+                                          classConnect.createReport(conn)
+                                    elif option1 == "2":
+                                          valid_input1 == True
+                                          goBack = False
+                                          classConnect.viewReport(conn)
+                                    elif option1 == "3":#break out of current while loop and go to the first while loop
+                                          valid_input = False
+                                          break
+                                    else:
+                                          print("Please choose a valid option \n")
+                        elif option == "4":
+                              valid_input = True
+                              classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
+                        elif option == "5":
+                              print("Logging out...")
+                              classConnect.loginOut(conn,employeeid,classConnect.roleCheck(conn),loginid)
+                              return
+                        else:
+                              print("Please choose a valid menu: \n")
       except KeyboardInterrupt:
                   classConnect.loginOut(conn,employeeid,classConnect.roleCheck(conn),loginid)
 
