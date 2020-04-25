@@ -23,7 +23,6 @@ class Connection:
             myCursor = conn.cursor()
             date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
-            
             role = self.roleCheck(conn)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
@@ -190,15 +189,15 @@ class Connection:
                 if tryAgain != "Y":
                     return
         name = input("Please enter a name for this model: ")
-        cost = input("Please enter how much it cost for this model to be manufactured: ")
-        price = input("Please enter a price for this model: ")
+        cost = input("Please enter how much this item cost to manufacture: ")
+        price = input("Please enter how much this item will sell for: ")
         time = input("Please enter how long it took to manufacturer this model in days: ")
         category = input("Please enter a category for this model: ")
         quantity = input("Please enter a quantity for this model: ")
         invId = self.getMaxID(conn,'inventory','inventoryid')+1
-        myCursor.execute("insert into Model (modelname, costmodel, designid, leadtime) values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
+        myCursor.execute("insert into Model values (%s, %s, %s, %s)", (name, cost, doesExist[0], time))
         conn.commit()
-        myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s %s, %s)", (invId, price, category, name, quantity))
+        myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s, %s, %s)", (invId, price, category, name, quantity))
         conn.commit()
 
 
@@ -238,23 +237,26 @@ class Connection:
             employeeID = input("Enter your employee ID: ")
             try:
                 empCheck = myCursor.execute("Select employeeid from employee where employeeid = %s", employeeID)
+                conn.commit()
                 invalidemp = False
             except(Exception, psycopg2.Error) as error:
                 print(error)
         invalid=True
         while(invalid):
-            designid = self.getMaxID(conn,'design','designid')
+            designid = self.getMaxID(conn,'design','designid')+1
             try:
                 print("hello")
                 myCursor.execute("Select designid from design where designid=%s", designid)#should throw an error
                 itemCost = input("Enter the items cost: ")
                 myCursor.execute("Insert into model (employeeid,modelnumber,costitem) values (%s,%s,%s)", (employeeID, modelNumber,itemCost))
+                designrev = input("Enter the items revision: ")
+                myCursor.execute("Insert into design values (%s,%s,%s)", (designid,employeeID,designrev))
                 conn.commit()
+                return
 
             except(Exception, psycopg2.Error) as error:
-                if error:
-                    invalid=False
-                    return
+                print(error)
+                invalid=True
                 
     def updateDesign(self,conn):
 
