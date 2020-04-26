@@ -757,8 +757,20 @@ class Connection:
     def deleteOrder(self,conn):
         try:
             myCursor = conn.cursor()
-            orderid
-            return
+            invalid = True
+            while invalid == True:
+                ordNum = input("Please enter the Order number: ")
+                myCursor.execute("select ordernumber from orders where ordernumber = %s", ordNum)
+                confirm = myCursor.fetchall()
+                if confirm:
+                    invalid = False
+                else:
+                    tryAgain = input("Order doesn't exist. Would you like to try again? (Y/N)")
+                    if tryAgain != "Y":
+                        return
+            myCursor.execute("delete from orders where ordernumber = %s", ordNum)
+            print("Order number %s has been deleted", ordNum)
+            conn.commit()
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -767,9 +779,9 @@ class Connection:
             myCursor = conn.cursor()
             myCursor.execute("select * from orders")
             orders = myCursor.fetchall()
-            print(" Order Numeber \t\t Customer ID \t\t Employee ID \t\t Sale Price \t\t Inventory")
+            print("Order Number \t\t Customer ID \t\t Employee ID \t\t Sale Price \t\t Inventory")
             for i in range(len(orders)):
-                print(orders[i][0], "\t\t", orders[i][1], "\t\t", orders[i][2], "\t\t", orders[i][3], "\t\t", orders[i][4])
+                print(orders[i][0], "\t\t\t", orders[i][1], "\t\t\t", orders[i][2], "\t\t\t", orders[i][3], "\t\t\t", orders[i][4])
             return
         except KeyboardInterrupt:     
             self.loginOut(conn)
