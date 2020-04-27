@@ -32,6 +32,7 @@ class Connection:
             return
     
     def loginOut(self,conn):
+        print(conn)
         myCursor = conn.cursor()
         outdate = datetime.datetime.now().date()
         outtime = datetime.datetime.now().time()
@@ -68,6 +69,8 @@ class Connection:
                         myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
                         conn.commit()
                         userType = input("What type user is this user: ")
+                        myCursor.execute("Create role %s", usrName)
+                        conn.commit()
                         myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
                         print("New User has been added")
@@ -567,6 +570,18 @@ class Connection:
 
         return
 
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+
     #Table function calls
     def updateTable(self, conn):
         #to prompt for table name
@@ -742,21 +757,26 @@ class Connection:
     def updateOrder(self,conn):
         try:
             myCursor = conn.cursor()
-            orderid = input("What is your order ID: ")
-            checkOrder = myCursor.execute("select orderid from orders where orderid in (select orderid from orders)")
-            checkOderId = myCursor.fetchone()[0]
-            if orderid == checkOderId:
+            orderid = input("What is your order number: ")
+            checkOrder = myCursor.execute("select ordernumber from orders where ordernumber = %s", orderid)
+            checkOrderId = str(myCursor.fetchone()[0])
+            if orderid == checkOrderId:
                 newInventoryId = input("What inventory ID would you like to change your order to: ")
-                myCursor.execute("select inventoryid from orders where orderid = %s", orderid)
-                oldInventoryId = myCursor.fetchone()[0]
+                myCursor.execute('''select "inventoryId" from orders where ordernumber = %s''', orderid)
+                oldInventoryId = str(myCursor.fetchone()[0])
                 myCursor.execute("select quantity from inventory where inventoryid = %s", oldInventoryId)
-                oldInventoryQuantity = myCursor.fetchone()[0]
+                oldInventoryQuantity = int(myCursor.fetchone()[0])
                 myCursor.execute("select quantity from inventory where inventoryid = %s",newInventoryId)
-                checkInventory = myCursor.fetchone()[0]
+                checkInventory = int(myCursor.fetchone()[0])
                 if checkInventory > 0:
-                    myCursor.execute("update orders set quantity = %s where inventoryid = %s", (checkInventory-1,newInventoryId))
-                    myCursor.execute("update orders set quantity = %s where inventoryid = %s", (oldInventoryQuantity+1,oldInventoryId))
-                    myCursor.execute("update orders set inventoryid = %s where orderid = %s", (newInventoryId,orderid))
+                    myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(checkInventory-1),newInventoryId))
+                    conn.commit()
+                    myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(oldInventoryQuantity+1),oldInventoryId))
+                    conn.commit()
+                    myCursor.execute('''update orders set "inventoryId" = %s where ordernumber = %s''', (newInventoryId,orderid))
+                    conn.commit()
+                    self.loginOut(conn)
+
                 else:
                     print("This new item is out of stock")
             return
