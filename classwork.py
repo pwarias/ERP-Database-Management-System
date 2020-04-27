@@ -32,6 +32,7 @@ class Connection:
             return
     
     def loginOut(self,conn):
+        print(conn)
         myCursor = conn.cursor()
         outdate = datetime.datetime.now().date()
         outtime = datetime.datetime.now().time()
@@ -68,6 +69,8 @@ class Connection:
                         myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
                         conn.commit()
                         userType = input("What type user is this user: ")
+                        myCursor.execute("Create role %s", usrName)
+                        conn.commit()
                         myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
                         print("New User has been added")
@@ -558,6 +561,41 @@ class Connection:
             self.loginOut(conn)
 
 
+<<<<<<< HEAD
+=======
+    def updateModel(self, conn):
+        myCursor = conn.cursor()
+        invalid=True
+        while(invalid):
+            try:
+                id=input("Please enter the model number of the model: ")
+                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
+                newCost=input("Please enter the new cost of the model: ") #error checking
+                newLead=input("Please enter the new lead time: ")
+                newDesign=input("Please enter the new designId: ")
+                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
+                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
+                myCursor.commit() #should include after all executions
+                invalid=False
+
+            except:
+                print("Error: model number not found")
+
+        return
+
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+
+>>>>>>> d862ee5c8fb3f6a43e99681fce5af607463bb6d6
     #Table function calls
     def updateTable(self, conn):
         #to prompt for table name
@@ -734,6 +772,7 @@ class Connection:
     def updateOrder(self,conn):
         try:
             myCursor = conn.cursor()
+<<<<<<< HEAD
             orderid = input("What is your order ID: ")
             myCursor.execute("select ordernumber from orders where ordernumber= %s", (orderid, ))
             
@@ -757,6 +796,30 @@ class Connection:
                 print("Order update successful")
             else:
                 print("This new item is out of stock")
+=======
+            orderid = input("What is your order number: ")
+            checkOrder = myCursor.execute("select ordernumber from orders where ordernumber = %s", orderid)
+            checkOrderId = str(myCursor.fetchone()[0])
+            if orderid == checkOrderId:
+                newInventoryId = input("What inventory ID would you like to change your order to: ")
+                myCursor.execute('''select "inventoryId" from orders where ordernumber = %s''', orderid)
+                oldInventoryId = str(myCursor.fetchone()[0])
+                myCursor.execute("select quantity from inventory where inventoryid = %s", oldInventoryId)
+                oldInventoryQuantity = int(myCursor.fetchone()[0])
+                myCursor.execute("select quantity from inventory where inventoryid = %s",newInventoryId)
+                checkInventory = int(myCursor.fetchone()[0])
+                if checkInventory > 0:
+                    myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(checkInventory-1),newInventoryId))
+                    conn.commit()
+                    myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(oldInventoryQuantity+1),oldInventoryId))
+                    conn.commit()
+                    myCursor.execute('''update orders set "inventoryId" = %s where ordernumber = %s''', (newInventoryId,orderid))
+                    conn.commit()
+                    self.loginOut(conn)
+
+                else:
+                    print("This new item is out of stock")
+>>>>>>> d862ee5c8fb3f6a43e99681fce5af607463bb6d6
             return
         except KeyboardInterrupt:     
             self.loginOut(conn)
