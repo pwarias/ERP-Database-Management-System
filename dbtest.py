@@ -88,11 +88,34 @@ def admin_menu(classConnect, conn,employeeid):
                                     if option1 == "1":
                                           valid_input1 = True
                                           goBack = False
-                                          classConnect.createReport(conn)
+                                          print("Please select which report you would like to create\n")
+                                          option2 = input("1. Create revenue report\n2. Create customer report\n3. Create inventory report\n4. Create-view expense report\n: ")
+                                          if option2=='1':
+                                                classConnect.createTotalRevenue(conn)
+                                          elif option2=='2':
+                                                classConnnect.createCustomerPrediction(conn)
+                                          elif option2=='3':
+                                                classConnect.createOrderInventory(conn)
+                                          
+                                          elif option2=='4':
+                                                print("Why no work")
+                                                classConnect.viewExpenseReport(conn)
+                                          return
+
                                     elif option1 == "2":
                                           valid_input1 == True
                                           goBack = False
-                                          classConnect.viewReport(conn)
+                                          print("Please select which report you would like to view\n")
+                                          option2 = input("1. revenue report\n2. customer report\n3. inventory report\n: ")
+                                          
+                                          if option2=='1':
+                                                classConnect.viewTotalRevenue(conn)
+                                          elif option2=='2':
+                                                classConnnect.viewCustomerPrediction(conn)
+                                          elif option2=='3':
+                                                classConnect.viewOrderInventory(conn)
+                                          return
+                                        
                                     elif option1 == "3":#break out of current while loop and go to the first while loop
                                           valid_input = False
                                           break
