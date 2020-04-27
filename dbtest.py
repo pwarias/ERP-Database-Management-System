@@ -40,12 +40,13 @@ def admin_menu(classConnect, conn,employeeid):
             while goBack == True:
                   valid_input = False
                   valid_input1 = False
-                  print("Select a menu (number): \n")
+                  print("Select a menu (number):")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Users \n2. Tables \n3. Reports \n4. View Employees\n5. Quit\n") #prompt user for option
+                        print("1. Users \n2. Tables \n3. Reports \n4. View Employees\n5. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
-                              print("Select an option (number): \n")
+                              print("Select an option (number):")
                               while valid_input1 == False: #loop until valid response
                                     option1 = input("1. Create user\n2. Update user\n3. Return to previous menu\n") #prompt user for option
                                     if option1 == "1":
@@ -60,10 +61,10 @@ def admin_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          print("Please choose a valid option")
                         elif option == "2":
                               valid_input = True
-                              print("Select an option (number): \n")
+                              print("Select an option (number):")
                               while valid_input1 == False: #loop until valid response
                                     option1 = input("1. Create table\n2. Update table\n3. Return to previous menu\n") #prompt user for option
                                     if option1 == "1":
@@ -78,10 +79,10 @@ def admin_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          print("Please choose a valid option")
                         elif option == "3":
                               valid_input = True
-                              print("Select an option (number): \n")
+                              print("Select an option (number):")
                               while valid_input1 == False: #loop until valid response
                                     option1 = input("1. Create report\n2. View report\n3. Return to previous menu\n") #prompt user for option
                                     if option1 == "1":
@@ -96,7 +97,7 @@ def admin_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          print("Please choose a valid option")
                         elif option == "4":
                               valid_input = True
                               classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
@@ -105,7 +106,7 @@ def admin_menu(classConnect, conn,employeeid):
                               classConnect.loginOut(conn)
                               return
                         else:
-                              print("Please choose a valid menu: \n")
+                              print("Please choose a valid menu:")
       except KeyboardInterrupt:
                   classConnect.loginOut(conn)
 
@@ -115,9 +116,10 @@ def engineer_menu(classConnect, conn,employeeid):
             while goBack == True:
                   valid_input = False
                   valid_input1 = False
-                  print("Select a menu (number): \n")
+                  print("Select a menu (number):")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Design\n2. Model\n3. Inventory\n4. Employee Infromation\n5. Quit\n") #prompt user for option
+                        print("1. Design\n2. Model\n3. Inventory\n4. Employee Infromation\n5. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("Select an option (number): \n")
@@ -192,7 +194,8 @@ def sales_menu(classConnect, conn,employeeid):
                   valid_input1 = False
                   print("Select a menu (number): \n")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Customers\n2. Orders\n3. Reports\n4. Quit\n") #prompt user for option
+                        print("1. Customers\n2. Orders\n3. Reports\n4. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("Select an option (number): \n")
@@ -254,7 +257,8 @@ def hr_menu(classConnect, conn,employeeid):
                   valid_input1 = False
                   print("Select a menu (number): \n")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Employee information\n2. idk\n3. Quit\n") #prompt user for option
+                        print("1. Employee information\n2. idk\n3. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("Select an option (number): \n")
