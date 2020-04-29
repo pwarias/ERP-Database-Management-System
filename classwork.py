@@ -770,7 +770,7 @@ class Connection:
     def updateOrder(self,conn):
         try:
             invalid = True
-            whille invalid == True:
+            while invalid == True:
                 myCursor = conn.cursor()
                 orderid = input("What is your order number: ")
                 checkOrder = myCursor.execute("select ordernumber from orders where ordernumber = %s", orderid)
