@@ -25,7 +25,7 @@ class Connection:
             date = datetime.datetime.now().date()
             time = datetime.datetime.now().time()
             role = self.roleCheck(conn)
-            print(self.loginid)
+            print("Login ID: ", self.loginid)
             myCursor.execute("Insert into login values (%s,%s,%s,%s,%s,%s,%s) ", (self.loginid,role,'None',time,employeeid,date,'None'))
             conn.commit()
             return conn
