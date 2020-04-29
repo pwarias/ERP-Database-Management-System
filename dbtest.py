@@ -42,7 +42,8 @@ def admin_menu(classConnect, conn,employeeid):
                   valid_input1 = False
                   print("\nSelect a menu (number): \n")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Users \n2. Tables \n3. Reports \n4. View Employees\n5. Quit\n") #prompt user for option
+                        print("1. Users \n2. Tables \n3. Reports \n4. View Employees\n5. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("\nSelect an option (number): \n")
@@ -60,7 +61,7 @@ def admin_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          print("Please choose a valid option")
                         elif option == "2":
                               valid_input = True
                               print("\nSelect an option (number): \n")
@@ -78,7 +79,7 @@ def admin_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          print("Please choose a valid option")
                         elif option == "3":
                               valid_input = True
                               print("\nSelect an option (number): \n")
@@ -87,16 +88,39 @@ def admin_menu(classConnect, conn,employeeid):
                                     if option1 == "1":
                                           valid_input1 = True
                                           goBack = False
-                                          classConnect.createReport(conn)
+                                          print("Please select which report you would like to create\n")
+                                          option2 = input("1. Create revenue report\n2. Create customer report\n3. Create inventory report\n4. Create-view expense report\n: ")
+                                          if option2=='1':
+                                                classConnect.createTotalRevenue(conn)
+                                          elif option2=='2':
+                                                classConnnect.createCustomerPrediction(conn)
+                                          elif option2=='3':
+                                                classConnect.createOrderInventory(conn)
+                                          
+                                          elif option2=='4':
+                                                print("Why no work")
+                                                classConnect.viewExpenseReport(conn)
+                                          return
+
                                     elif option1 == "2":
                                           valid_input1 == True
                                           goBack = False
-                                          classConnect.viewReport(conn)
+                                          print("Please select which report you would like to view\n")
+                                          option2 = input("1. revenue report\n2. customer report\n3. inventory report\n: ")
+                                          
+                                          if option2=='1':
+                                                classConnect.viewTotalRevenue(conn)
+                                          elif option2=='2':
+                                                classConnnect.viewCustomerPrediction(conn)
+                                          elif option2=='3':
+                                                classConnect.viewOrderInventory(conn)
+                                          return
+                                        
                                     elif option1 == "3":#break out of current while loop and go to the first while loop
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          print("Please choose a valid option")
                         elif option == "4":
                               valid_input = True
                               classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
@@ -105,7 +129,7 @@ def admin_menu(classConnect, conn,employeeid):
                               classConnect.loginOut(conn)
                               return
                         else:
-                              print("Please choose a valid menu: \n")
+                              print("Please choose a valid menu:")
       except KeyboardInterrupt:
                   classConnect.loginOut(conn)
 
@@ -117,7 +141,8 @@ def engineer_menu(classConnect, conn,employeeid):
                   valid_input1 = False
                   print("\nSelect a menu (number): \n")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Design\n2. Model\n3. Inventory\n4. Employee Infromation\n5. Quit\n") #prompt user for option
+                        print("1. Design\n2. Model\n3. Inventory\n4. Employee Infromation\n5. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("\nSelect an option (number): \n")
@@ -195,7 +220,8 @@ def sales_menu(classConnect, conn,employeeid):
                   valid_input1 = False
                   print("\nSelect a menu (number): \n")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Customers\n2. Orders\n3. Reports\n4. Quit\n") #prompt user for option
+                        print("1. Customers\n2. Orders\n3. Reports\n4. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("\nSelect an option (number): \n")
@@ -257,7 +283,8 @@ def hr_menu(classConnect, conn,employeeid):
                   valid_input1 = False
                   print("\nSelect a menu (number): \n")
                   while valid_input == False: #loop until valid response
-                        option = input("1. Employee information\n2. idk\n3. Quit\n") #prompt user for option
+                        print("1. Employee information\n2. idk\n3. Quit\n") #prompt user for option
+                        option = input("Please select and option:")
                         if option == "1":
                               valid_input = True
                               print("\nSelect an option (number): \n")

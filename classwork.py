@@ -70,6 +70,10 @@ class Connection:
                         myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
                         conn.commit()
                         userType = input("What type user is this user: ")
+                        myCursor.execute("Create role %s", usrName)
+                        conn.commit()
+                        myCursor.execute("Grant insert,update on login to %s",(AsIs(usrName)))
+                        conn.commit()
                         myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
                         print("New User has been added")
@@ -569,8 +573,17 @@ class Connection:
 
             except:
                 print("Error: model number not found")
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-        return
+
 
     #Abdallah
     #Table function calls
@@ -583,34 +596,43 @@ class Connection:
             tblNames = myCursor.fetchall() #list of all tables and views
             while invalid == True:
                 tblName = input("Please enter the name of the table: ")
-                if tblName in tblNames:
-                    invalid = False
-                else:
-                    tryAgain = input("Table doesn't exist. Would you like to try another name? (Y/N)")
-                    if tryAgain != "Y":
-                        return
-
+                for i in range(len(tblNames)):
+                    tables= tblNames[i][0]
+                    if tblName == tables:
+                        invalid = False
+                        correctTable = str(tables)
+                    else:
+                        continue
+            print(correctTable)
             #to list all columns in that table
-            myCursor.execute("select column_name from information_schema.columns where table_schema = 'public'\
-                            and table_name = %s", (tblName))
+            myCursor.execute("select column_name from information_schema.columns where table_schema = 'public' and table_name = %s", (correctTable,))
             cols = myCursor.fetchall() #list of tuples i.e. [(employeeId), (firstName)...(salary)]
 
             #to do an operation on columns of table
-            option = input("Please select an option (number):\n1. Rename column\n2. Add coulumn\n3. Delete column")
+            print("Please select an option (number):\n1. Rename column\n2. Add coulumn\n3. Delete column")
+            option = input("Please select and option:")
+            invalid = True
             while invalid == True:
                 if option == "1":
                     invalid = False
                     invalid1 = True
                     while invalid1 == True:
                         col = input("Please enter the name of the column you want to rename: ")
-                        if col in cols:
-                            invalid1 = False
-                        else:
+                        for i in range(len(cols)):
+                            columns = cols[i][0]
+                            if col == columns:
+                                invalid1 = False
+                                correctCol = str(columns)
+                            else:
+                                continue
+                        if invalid1 == True:
+                            print(correctCol)
                             tryAgain = input("Column doesn't exist. Would you like to try another name? (Y/N)")
                             if tryAgain != "Y":
                                 return
                     newCol = input("Please enter the new column name: ")
-                    myCursor.execute("alter table %s rename column %s to %s", (tblName, col, newCol))
+                    myCursor.execute("alter table %s rename column %s to %s", (AsIs(correctTable), AsIs(correctCol), AsIs(newCol)))
+                    conn.commit()
                 elif option == "2":
                     invalid = False
                     invalid1 = True
@@ -622,7 +644,8 @@ class Connection:
                             tryAgain = input("Column already exists. Would you like to try another name? (Y/N)")
                             if tryAgain != "Y":
                                 return
-                    prompt = input("Please choose the data type (number):\n1. String\n2. Int")
+                    print("Please choose the data type (number):\n1. String\n2. Int")
+                    prompt = input("Please select and option:")
                     if prompt == "1":
                         colType = 'varchar(50)'
                     elif prompt == "2":
@@ -678,7 +701,8 @@ class Connection:
             valid_input = False
             while valid_input == False:
                 print("Update Inventory Menu:")
-                menuSelect = input("1. Update Quantity \n 2. Remove Item")
+                print("1. Update Quantity \n 2. Remove Item")
+                menuSelect = input("Please select and option:")
                 if menuSelect == "1":
                     valid_input = True
                     inventoryid = input("What inventory ID would you like to update: ")
@@ -735,7 +759,7 @@ class Connection:
                 if checkInventory > 0:
                     myCursor.execute("select saleprice from inventory where inventoryid = %s",inventoryid)
                     saleprice = myCursor.fetchone()[0]
-                    myCursor.execute("Insert into order (ordernumber,customerid,employeeid,saleprice,inventoryId) values ()")
+                    myCursor.execute("Insert into orders (ordernumber,customerid,employeeid,saleprice,inventoryid) values (%s,%s,%s,%s,%s)", (ordernumber, customerid, employeeid, saleprice, inventoryId))
                     conn.commit()
                     myCursor.execute("Update inventory set inventory = %s where inventoryid = %s",
                                     (checkInventory-1,inventoryid))
@@ -745,32 +769,32 @@ class Connection:
             self.loginOut(conn)
     def updateOrder(self,conn):
         try:
-            myCursor = conn.cursor()
             invalid = True
-            while invalid == True:
+            whille invalid == True:
+                myCursor = conn.cursor()
                 orderid = input("What is your order number: ")
-                myCursor.execute("select ordernumber from order where ordernumber = %s", orderid)
-                checkOrderId = myCursor.fetchone()[0]
-                if checkOrderId:
+                checkOrder = myCursor.execute("select ordernumber from orders where ordernumber = %s", orderid)
+                checkOrderId = str(myCursor.fetchone()[0])
+                if orderid == checkOrderId:
                     invalid = False
+                    newInventoryId = input("What inventory ID would you like to change your order to: ")
+                    myCursor.execute("select inventoryid from orders where ordernumber = %s", orderid)
+                    oldInventoryId = str(myCursor.fetchone()[0])
+                    myCursor.execute("select quantity from inventory where inventoryid = %s", oldInventoryId)
+                    oldInventoryQuantity = int(myCursor.fetchone()[0])
+                    myCursor.execute("select quantity from inventory where inventoryid = %s",newInventoryId)
+                    checkInventory = int(myCursor.fetchone()[0])
+                    if checkInventory > 0:
+                        myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(checkInventory-1),newInventoryId))
+                        conn.commit()
+                        myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(oldInventoryQuantity+1),oldInventoryId))
+                        conn.commit()
+                        myCursor.execute("update orders set inventoryid = %s where ordernumber = %s", (newInventoryId,orderid))
+                        conn.commit()
                 else:
-                    tryAgain = input("Order doesn't exit. Would you like to tru another order number? (Y/N)")
+                    tryAgain = input("Order doesn't exit. Would you like to try another order number? (Y/N)")
                     if tryAgain != "Y":
                         return
-            newInventoryId = input("What inventory ID would you like to change your order to: ")
-            myCursor.execute("select inventoryid from orders where orderid = %s", orderid)
-            oldInventoryId = myCursor.fetchone()[0]
-            myCursor.execute("select quantity from inventory where inventoryid = %s", oldInventoryId)
-            oldInventoryQuantity = myCursor.fetchone()[0]
-            myCursor.execute("select quantity from inventory where inventoryid = %s",newInventoryId)
-            checkInventory = myCursor.fetchone()[0]
-            if checkInventory > 0:
-                myCursor.execute("update orders set quantity = %s where inventoryid = %s", (checkInventory-1,newInventoryId))
-                myCursor.execute("update orders set quantity = %s where inventoryid = %s", (oldInventoryQuantity+1,oldInventoryId))
-                myCursor.execute("update orders set inventoryid = %s where orderid = %s", (newInventoryId,orderid))
-            else:
-                print("This new item is out of stock")
-            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
