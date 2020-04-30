@@ -19,6 +19,7 @@ def mainMenu():
             classConnect.loginid = classConnect.getMaxID(conn1,'login','loginid')+1
             conn = classConnect.loginIn(username, passwrd,employeeid)
             role = classConnect.roleCheck(conn)
+            print(role)
             try:
                   if role == "admins" or role=="postgres":
                         admin_menu(classConnect, conn,employeeid)
@@ -161,7 +162,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          valid_input1 = False
                         if option == "2":
                               valid_input = True
                               print("Select an option (number): \n")
