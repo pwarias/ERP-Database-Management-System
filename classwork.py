@@ -96,18 +96,18 @@ class Connection:
         try:
             myCursor = conn.cursor()
             usrName = input("Enter a username you want to update: ")
-            newPasword = input("Enter a password: ")
-            confnewPassword = input("Confirm the password")
+            newPasword = input("Enter a new password: ")
+            confnewPassword = input("Confirm the password: ")
             invalid=True
             if newPasword == confnewPassword:
                 while(invalid):
                     try:
-                        myCursor.execute("Alter user %s with password %s", (usrName,newPasword))
+                        myCursor.execute("Alter user %s with password %s", (AsIs(usrName),newPasword))
                         conn.commit()
                         userType = input("What type of user is this user: ")
-                        myCursor.execute("Grant %s privileges on database %s to %s", (userType,self.database,usrName))
+                        myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
-                        print("New User has been added")
+                        print("User %s has been updated" % usrName)
                         invalid=False
                     except(Exception,psycopg2.Error) as error:
                         if error == 42704:
@@ -426,7 +426,7 @@ class Connection:
         try:
             myCursor = conn.cursor()
             if jobtype == "engineer":
-                table = PrettyTable(['Fist Name', 'Last Name', 'Job Type'])
+                table = PrettyTable(['First Name', 'Last Name', 'Job Type'])
                 myCursor.execute("select * from engineeremployeeview")
                 employees = myCursor.fetchall()
                 for i in range(len(employees)):
@@ -529,6 +529,7 @@ class Connection:
 
     def viewCustomerPrediction(self,conn): #Neeeds testing
         try:
+            print("hi")
             table = PrettyTable(['Customer ID', 'Model Name', 'Count'])
             myCursor = conn.cursor()
             sql = "select * from customer_prediction"
