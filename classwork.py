@@ -34,7 +34,6 @@ class Connection:
             return
     
     def loginOut(self,conn):
-        print(conn)
         myCursor = conn.cursor()
         outdate = datetime.datetime.now().date()
         outtime = datetime.datetime.now().time()
@@ -105,10 +104,14 @@ class Connection:
                         myCursor.execute("Alter user %s with password %s", (AsIs(usrName),newPasword))
                         conn.commit()
                         userType = input("What type of user is this user: ")
-                        myCursor.execute("Grant %s on %s to %s", (AsIs(userType),self.database,AsIs(usrName)))
-                        conn.commit()
-                        print("New User has been added")
-                        valid=True
+                        if(userType== "hr" or userType=="engineer" or userType=="sales"):
+                            myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
+                            conn.commit()
+                            print("User Updated!")
+                            valid=True
+                        else:
+                            print("Error not a valid user type")
+                            valid=False
                     except(Exception,psycopg2.Error) as error:
                         valid=False
                         if error == 42704:
@@ -122,6 +125,7 @@ class Connection:
                 
         except KeyboardInterrupt:     
             self.loginOut(conn)
+        return
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -148,12 +152,14 @@ class Connection:
                 ques = input("Customer with that name already exists. Is this a different customer with the same name? (Y/N)")
                 if ques == "Y":
                     cId = self.getMaxID(conn,'customer','customerid')+1
-                    myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+                    myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s, %s)", (cId, fName,lName))
                     conn.commit()
+                    print("Customer created!")
             else:
                 cId = self.getMaxID(conn,'customer','customerid')+1 
-                myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
+                myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s, %s)", (cId, fName,lName))
                 conn.commit()
+                print("Customer created!")
         except KeyboardInterrupt:     
             self.loginOut(conn)
     def updateCustomer(self,conn):
@@ -174,6 +180,7 @@ class Connection:
             lName = input("\nEnter new Last Name: ")
             myCursor.execute("update Customer set firstName = %s, lastName = %s where customerId = %s", (fName, lName, confirmCId))
             conn.commit()
+            print("Customer updated successfully!")
         except KeyboardInterrupt:     
             self.loginOut(conn)
     def viewCustomers(self,conn):
@@ -479,6 +486,7 @@ class Connection:
             sql="create or replace view total_revenue as select employeeid, customerid, sum(saleprice) from orders group by employeeid, customerid;"
             myCursor.execute(sql)
             conn.commit()
+            print("Report created!")
             return
         except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
@@ -490,19 +498,22 @@ class Connection:
             sql= "create or replace view customer_prediction as select orders.customerid, inventory.modelname, count(orders) from orders, inventory group by customerid, modelname;"
             myCursor.execute(sql)
             conn.commit()
+            print("Report created!")
             return
         except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
-    def createOrderInentory(self, conn): #Neeeds testing
+    def createOrderInventory(self, conn): #Neeeds testing
         #For each order, the associated parts and available inventory
         try:
             myCursor=conn.cursor()
             sql="create or replace view parts as select orders.ordernumber, inventory.modelname, inventory.quantity from orders inner join inventory on orders.inventoryid=inventory.inventoryid;"
             myCursor.execute(sql)
             conn.commit()
+            print("Report created!")
             return
-        except (KeyboardInterrupt,psycopg2.Error):     
+        except(Exception, KeyboardInterrupt,psycopg2.Error) as error:
+            print("Error %s" % error)     
             self.loginOut(conn)
 
     def viewExpenseReport(self, conn): #Neeeds testing
@@ -749,9 +760,9 @@ class Connection:
     def createOrder(self,conn):
         try:
             myCursor = conn.cursor()
-            ordernumber = self.getMaxID(conn,'order','ordernumber')+1
+            ordernumber = self.getMaxID(conn,'orders','ordernumber')+1
             customerid = input("Enter the custumers ID number: ")
-            custIdCheck = myCursor.execute("select custumerid from customer where customerid = %s",customerid)
+            custIdCheck = myCursor.execute("select customerid from customer where customerid = %s",customerid)
             custvals = myCursor.fetchall()
             if custvals:
                 employeeid = input("Enter your employee ID number: ") 
@@ -763,11 +774,13 @@ class Connection:
                     saleprice = myCursor.fetchone()[0]
                     myCursor.execute("Insert into orders (ordernumber,customerid,employeeid,saleprice,inventoryid) values (%s,%s,%s,%s,%s)", (ordernumber, customerid, employeeid, saleprice, inventoryid))
                     conn.commit()
-                    myCursor.execute("Update inventory set inventory = %s where inventoryid = %s",
+                    myCursor.execute("Update inventory set quantity = %s where inventoryid = %s",
                                     (checkInventory-1,inventoryid))
                     conn.commit()
+                    print("Order number %s successfully placed!" % ordernumber)
             return
-        except (KeyboardInterrupt,psycopg2.Error):     
+        except (Exception, KeyboardInterrupt,psycopg2.Error) as error:
+            print(error)     
             self.loginOut(conn)
     def updateOrder(self,conn):
         try:
@@ -776,18 +789,18 @@ class Connection:
             while invalid == True:
                 myCursor = conn.cursor()
                 orderid = input("What is your order number: ")
-                checkOrder = myCursor.execute("select ordernumber from orders where ordernumber = %s", orderid)
+                checkOrder = myCursor.execute("select ordernumber from orders where ordernumber = %s", (orderid, ))
                 checkOrderId = str(myCursor.fetchone()[0])
                 if orderid == checkOrderId:
                     invalid = False
                     newInventoryId = input("What inventory ID would you like to change your order to: ")
-                    myCursor.execute("select inventoryid from orders where ordernumber = %s", orderid)
+                    myCursor.execute("select inventoryid from orders where ordernumber = %s", (orderid, ))
                     oldInventoryId = str(myCursor.fetchone()[0])
-                    myCursor.execute("select quantity from inventory where inventoryid = %s", oldInventoryId)
+                    myCursor.execute("select quantity from inventory where inventoryid = %s", (oldInventoryId, ))
                     oldInventoryQuantity = int(myCursor.fetchone()[0])
-                    myCursor.execute("select quantity from inventory where inventoryid = %s",newInventoryId)
+                    myCursor.execute("select quantity from inventory where inventoryid = %s",(newInventoryId, ))
                     checkInventory = int(myCursor.fetchone()[0])
-                    myCursor.execute("select saleprice from inventory where inventoryid = %s",newInventoryId)
+                    myCursor.execute("select saleprice from inventory where inventoryid = %s",(newInventoryId, ))
                     saleprice = list(myCursor.fetchone())[0]
                     if checkInventory > 0:
                         myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (str(checkInventory-1),newInventoryId))
@@ -796,6 +809,7 @@ class Connection:
                         conn.commit()
                         myCursor.execute("update orders set inventoryid = %s, saleprice=%s where ordernumber = %s", (newInventoryId,saleprice,orderid))
                         conn.commit()
+                        print("Order updated successfully!")
                 else:
                     tryAgain = input("Order doesn't exit. Would you like to try another order number? (Y/N)")
                     if tryAgain != "Y":
@@ -809,7 +823,7 @@ class Connection:
             invalid = True
             while invalid == True:
                 ordNum = input("Please enter the Order number: ")
-                myCursor.execute("select ordernumber from orders where ordernumber = %s", ordNum)
+                myCursor.execute("select ordernumber from orders where ordernumber = %s", (ordNum, ))
                 confirm = myCursor.fetchall()
                 if confirm:
                     invalid = False
@@ -817,8 +831,8 @@ class Connection:
                     tryAgain = input("Order doesn't exist. Would you like to try again? (Y/N)")
                     if tryAgain != "Y":
                         return
-            myCursor.execute("delete from orders where ordernumber = %s", ordNum)
-            print("Order number %s has been deleted", ordNum)
+            myCursor.execute("delete from orders where ordernumber = %s", (ordNum, ))
+            print("Order number %s has been deleted"% ordNum)
             conn.commit()
         except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
