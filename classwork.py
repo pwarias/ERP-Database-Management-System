@@ -9,7 +9,7 @@ from prettytable import PrettyTable
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "8081"
+        self.port = "5432"
         self.database = "postgres"
         self.loginid = 0
 
