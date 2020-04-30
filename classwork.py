@@ -9,7 +9,7 @@ from prettytable import PrettyTable
 class Connection:
     def __init__(self):
         self.host = "127.0.0.1"
-        self.port = "5432"
+        self.port = "8081"
         self.database = "postgres"
         self.loginid = 0
 
@@ -34,6 +34,7 @@ class Connection:
             return
     
     def loginOut(self,conn):
+        print(conn)
         myCursor = conn.cursor()
         outdate = datetime.datetime.now().date()
         outtime = datetime.datetime.now().time()
@@ -223,7 +224,7 @@ class Connection:
             myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s, %s, %s)", (invId, price, category, name, quantity))
             conn.commit()
             print("Model successfully added!")
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def updateModel(self, conn):
@@ -244,7 +245,7 @@ class Connection:
 
                 except:
                     print("Error: model number not found")
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def deleteModel(self,conn):
@@ -277,7 +278,7 @@ class Connection:
             for i in range(len(allMod)):
                 table.add_row([allMod[i][0], allMod[i][1], allMod[i][2], allMod[i][3]])
             print(table)
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -316,7 +317,7 @@ class Connection:
                 except(Exception, psycopg2.Error) as error:
                     print(error)
                     invalid=True
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
                 
     def updateDesign(self,conn):
@@ -333,7 +334,7 @@ class Connection:
                     print(error)           
             return
             
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
         return
     
@@ -346,7 +347,7 @@ class Connection:
                 for i in range(len(allDes)):
                     table.add_row([allDes[i][0], allDes[i][1], allDes[i][2]])
                 print(table)
-            except KeyboardInterrupt:     
+            except (KeyboardInterrupt,psycopg2.Error):     
                 self.loginOut(conn)        
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -476,7 +477,7 @@ class Connection:
             myCursor.execute(sql)
             conn.commit()
             return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def createCustomerPrediction(self, conn): #Neeeds testing
@@ -487,7 +488,7 @@ class Connection:
             myCursor.execute(sql)
             conn.commit()
             return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def createOrderInentory(self, conn): #Neeeds testing
@@ -498,7 +499,7 @@ class Connection:
             myCursor.execute(sql)
             conn.commit()
             return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def viewExpenseReport(self, conn): #Neeeds testing
@@ -526,7 +527,7 @@ class Connection:
 
             print("Total cost of expenses $%s" % (salaryCost+modelCost+hourlyCost))
             return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def viewTotalRevenue(self,conn): #Neeeds testing
@@ -539,7 +540,7 @@ class Connection:
             for i in range(len(allRev)):
                 table.add_row([allRev[i][0], allRev[i][1], allRev[i][2]])
             print(table)
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def viewCustomerPrediction(self,conn): #Neeeds testing
@@ -568,7 +569,7 @@ class Connection:
             for i in range(len(ordInv)):
                 table.add_row([ordInv[i][0], ordInv[i][1], ordInv[i][2]])
             print(table)
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -690,7 +691,7 @@ class Connection:
             for i in range(len(allInv)):
                 table.add_row([allInv[i][0], allInv[i][1], allInv[i][2], allInv[i][3], allInv[i][4]])
             print(table)
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def updateInventory(self,conn):
@@ -724,7 +725,7 @@ class Connection:
                     tryAgain = input("Invalid input. Would you like to try again? (Y/N)")
                     if tryAgain != "Y":
                         return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
 
@@ -763,7 +764,7 @@ class Connection:
                                     (checkInventory-1,inventoryid))
                     conn.commit()
             return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
     def updateOrder(self,conn):
         try:
@@ -796,7 +797,7 @@ class Connection:
                     tryAgain = input("Order doesn't exit. Would you like to try another order number? (Y/N)")
                     if tryAgain != "Y":
                         return
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def deleteOrder(self,conn):
@@ -816,7 +817,7 @@ class Connection:
             myCursor.execute("delete from orders where ordernumber = %s", ordNum)
             print("Order number %s has been deleted", ordNum)
             conn.commit()
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
     def viewOrders(self,conn):
@@ -828,7 +829,7 @@ class Connection:
             for i in range(len(orders)):
                 table.add_row([orders[i][0], orders[i][1], orders[i][2], orders[i][3], orders[i][4]])
             print(table)
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -851,7 +852,7 @@ class Connection:
             if maxID:
                 return maxID[0]
             return 1
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)
     
  
@@ -875,5 +876,5 @@ class Connection:
 
 
             conn.commit()
-        except KeyboardInterrupt:     
+        except (KeyboardInterrupt,psycopg2.Error):     
             self.loginOut(conn)

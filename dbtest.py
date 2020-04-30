@@ -2,7 +2,6 @@ import psycopg2
 import classwork
 
 def mainMenu():
-
             try:
                   print("Welcome to the ERP DBMS!\n\nMain Menu\n")
                   username = input("Please enter your username: ")
@@ -11,7 +10,7 @@ def mainMenu():
                   conn1 = psycopg2.connect(user = 'idcheck',
                                           password = 'gettheid3',
                                           host = '127.0.0.1',
-                                          port = 5432,
+                                          port = 8081,
                                           database = 'postgres')
                   #call one of the following menus after verifying login info
                   #call permisionCheck() to then call correspodning menu
@@ -171,7 +170,7 @@ def engineer_menu(classConnect, conn,employeeid):
                                           valid_input = False
                                           break
                                     else:
-                                          print("Please choose a valid option \n")
+                                          valid_input1 = False
                         if option == "2":
                               valid_input = True
                               print("\nSelect an option (number): \n")
