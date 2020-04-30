@@ -426,6 +426,7 @@ class Connection:
 
     def employeeInfo(self,conn,jobtype):
         try:
+            print("in here")
             myCursor = conn.cursor()
             if jobtype == "engineer":
                 table = PrettyTable(['Fist Name', 'Last Name', 'Job Type'])
