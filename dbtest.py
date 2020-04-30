@@ -116,7 +116,7 @@ def admin_menu(classConnect, conn,employeeid):
                                                       classConnect.viewTotalRevenue(conn)
                                                 elif option2=='2':
                                                       invalid2 = False
-                                                      classConnnect.viewCustomerPrediction(conn)
+                                                      classConnect.viewCustomerPrediction(conn)
                                                 elif option2=='3':
                                                       invalid2 = False
                                                       classConnect.viewOrderInventory(conn)
@@ -307,6 +307,7 @@ def hr_menu(classConnect, conn,employeeid):
                                           valid_input1 = True
                                           goBack = False
                                           classConnect.employeeInfo(conn,classConnect.roleCheck(conn))
+                                          print("Got to the end")
                                     elif option1 == "3":
                                           valid_input = False
                                           break
@@ -321,7 +322,8 @@ def hr_menu(classConnect, conn,employeeid):
                               return
                         else:
                               print("Please choose a valid menu: \n")
-      except KeyboardInterrupt:
-                  classConnect.loginOut(conn)              
+      except (KeyboardInterrupt, Exception) as error:
+            print(error)
+            classConnect.loginOut(conn)              
 
 mainMenu()
