@@ -143,11 +143,11 @@ class Connection:
             if duplicateName:
                 ques = input("Customer with that name already exists. Is this a different customer with the same name? (Y/N)")
                 if ques == "Y":
-                    cId = getMaxID(conn,'customer','customerid')+1
+                    cId = self.getMaxID(conn,'customer','customerid')+1
                     myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
                     conn.commit()
             else:
-                cId = getMaxID(conn,'customer','customerid')+1 
+                cId = self.getMaxID(conn,'customer','customerid')+1 
                 myCursor.execute("Insert into Customer (customerid,firstname,lastname) values (%s,%s)", (cId, fName,lName))
                 conn.commit()
         except KeyboardInterrupt:     
@@ -320,12 +320,13 @@ class Connection:
             self.loginOut(conn)
                 
     def updateDesign(self,conn):
+        myCursor=conn.cursor()
         try:
             invalidDesign = True
-            while(invalidemp):
+            while(invalidDesign):
                 designUp = input("What design are you updating: ")
                 try:
-                    designCheck = myCursor.execute("Select designrev from design where designid = %s", designUp)
+                    designCheck = myCursor.execute("Select designrev from design where designid = %s", (designUp, ))
                     conn.commit()
                     invalidDesign = False
                 except(Exception, psycopg2.Error) as error:
@@ -376,7 +377,7 @@ class Connection:
             return
         except(KeyboardInterrupt, Exception, psycopg2.Error) as error:
             print(error)     
-            classConnect.loginOut(conn)
+            self.loginOut(conn)
 
     def updateEmployee(self,conn):
         try:
@@ -570,26 +571,6 @@ class Connection:
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
-    def newTable(self,conn): #checked with Ola likely not needed
-        myCursor = conn.cursor()
-        return
-    def updateModel(self, conn):
-        myCursor = conn.cursor()
-        invalid=True
-        while(invalid):
-            try:
-                id=input("Please enter the model number of the model: ")
-                myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
-                newCost=input("Please enter the new cost of the model: ") #error checking
-                newLead=input("Please enter the new lead time: ")
-                newDesign=input("Please enter the new designId: ")
-                sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
-                myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
-                myCursor.commit() #should include after all executions
-                invalid=False
-
-            except:
-                print("Error: model number not found")
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -764,9 +745,9 @@ class Connection:
     def createOrder(self,conn):
         try:
             myCursor = conn.cursor()
-            ordernumber = getMaxID(conn,'order','ordernumber')+1
-            custumerid = input("Enter the custumers ID number: ")
-            custIdCheck = myCursor.execute("select custumerid from customer where customerid = %s",custumerid)
+            ordernumber = self.getMaxID(conn,'order','ordernumber')+1
+            customerid = input("Enter the custumers ID number: ")
+            custIdCheck = myCursor.execute("select custumerid from customer where customerid = %s",customerid)
             custvals = myCursor.fetchall()
             if custvals:
                 employeeid = input("Enter your employee ID number: ") 
@@ -776,7 +757,7 @@ class Connection:
                 if checkInventory > 0:
                     myCursor.execute("select saleprice from inventory where inventoryid = %s",inventoryid)
                     saleprice = myCursor.fetchone()[0]
-                    myCursor.execute("Insert into orders (ordernumber,customerid,employeeid,saleprice,inventoryid) values (%s,%s,%s,%s,%s)", (ordernumber, customerid, employeeid, saleprice, inventoryId))
+                    myCursor.execute("Insert into orders (ordernumber,customerid,employeeid,saleprice,inventoryid) values (%s,%s,%s,%s,%s)", (ordernumber, customerid, employeeid, saleprice, inventoryid))
                     conn.commit()
                     myCursor.execute("Update inventory set inventory = %s where inventoryid = %s",
                                     (checkInventory-1,inventoryid))

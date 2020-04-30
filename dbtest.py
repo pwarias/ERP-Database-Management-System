@@ -93,7 +93,7 @@ def admin_menu(classConnect, conn,employeeid):
                                                       classConnect.createTotalRevenue(conn)
                                                 elif option2=='2':
                                                       invalid2 = False
-                                                      classConnnect.createCustomerPrediction(conn)
+                                                      classConnect.createCustomerPrediction(conn)
                                                 elif option2=='3':
                                                       invalid2 = False
                                                       classConnect.createOrderInventory(conn)
