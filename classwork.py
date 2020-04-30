@@ -32,7 +32,6 @@ class Connection:
             return
     
     def loginOut(self,conn):
-        print(conn)
         myCursor = conn.cursor()
         outdate = datetime.datetime.now().date()
         outtime = datetime.datetime.now().time()
@@ -69,7 +68,7 @@ class Connection:
                         myCursor.execute("Create user %s with password %s", (AsIs(usrName),Password, )) #(AsIs(usrName), Pasword, ))
                         conn.commit()
                         userType = input("What type user is this user: ")
-                        myCursor.execute("Create role %s", usrName)
+                        myCursor.execute("Grant insert,update on login to %s",(AsIs(usrName),))
                         conn.commit()
                         myCursor.execute("Grant %s to %s", (AsIs(userType),AsIs(usrName)))
                         conn.commit()
@@ -203,8 +202,7 @@ class Connection:
             myCursor = conn.cursor()
             invalid = True
             while invalid == True:
-                dsnNmbr = input("Please enter the design ID of the design that you would like to make a model \
-                                and add to the inventory: ")
+                dsnNmbr = input("Please enter the design ID of the design that you would like to make a model and add to the inventory: ")
                 myCursor.execute("select designid from design where designid = %s", (dsnNmbr))
                 doesExist = myCursor.fetchall()
                 if doesExist:
@@ -213,7 +211,7 @@ class Connection:
                     tryAgain = input("Invalid design ID. Would you like to try another design ID? (Y/N)")
                     if tryAgain != "Y":
                         return
-            name = input("Please enter a name for this model: ")
+            name = input("Please enter a name for this model: ")#needs error checking
             cost = input("Please enter how much this item cost to manufacture: ")
             price = input("Please enter how much this item will sell for: ")
             time = input("Please enter how long it took to manufacturer this model in days: ")
@@ -224,6 +222,7 @@ class Connection:
             conn.commit()
             myCursor.execute("insert into inventory (inventoryId, saleprice, category, modelname, quantity) values (%s, %s, %s, %s, %s)", (invId, price, category, name, quantity))
             conn.commit()
+            print("Model successfully added!")
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -233,22 +232,18 @@ class Connection:
             invalid=True
             while(invalid):
                 try:
-                    name=input("Please enter the name of the model: ")
-                    myCursor.execute("Select modelname from model where modelname=%s", (name, ))
+                    id=input("Please enter the model number of the model: ")
+                    myCursor.execute("Select modelNumber from model where modelNumber='%s'", (id, ))
                     newCost=input("Please enter the new cost of the model: ") #error checking
                     newLead=input("Please enter the new lead time: ")
                     newDesign=input("Please enter the new designId: ")
-                    sql="UPDATE model SET costmodel=%s, designid=%s, leadtime=%s WHERE modelname=%s"
-                    myCursor.execute(sql, (newCost, newDesign, newLead, name ))
+                    sql="UPDATE model SET costmodel=%s, designId=%s, leadtime=%s, WHERE modelname=%s"
+                    myCursor.execute(sql, (newCost, newDesign, newLead, id, ))
                     conn.commit() #should include after all executions
-                    print("Update Successful")
                     invalid=False
 
-                except (KeyboardInterrupt, Exception):
+                except:
                     print("Error: model number not found")
-                    if KeyboardInterrupt:
-                        conn.commit()
-                        self.loginOut(conn)
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -328,21 +323,18 @@ class Connection:
         try:
             myCursor = conn.cursor()
             invalidDesign = True
-            designUp = input("Please enter the design id: ")
-            employeeid=input("Please enter the id of the employee who completed this revision: ")
+            designUp = input("What design are you updating: ")
             while(invalidDesign):
                 try:
                     designCheck = myCursor.execute("Select designid from design where designid = %s", designUp)
-                    empcheck= myCursor.execute("Select employeeid from employee where employeeid=%s", (employeeid, ))
                     conn.commit()
                     invalidDesign = False
                 except(Exception, psycopg2.Error) as error:
                     print(error)           
             myCursor.execute("select designrev from design where designid = %s", designUp)
             newRev = myCursor.fetchone()[0] + 1
-            myCursor.execute("Update design set designrev = %s, employeeid=%s where designid = %s", (newRev, employeeid,designUp))
+            myCursor.execute("Update design set designrev = %s where designid = %s", (newRev,designUp))
             conn.commit()
-            print("Design rev has been updated")
             
         except KeyboardInterrupt:     
             self.loginOut(conn)
@@ -450,6 +442,7 @@ class Connection:
                 employees = myCursor.fetchall()
                 print(" Employee ID \t\t First Name \t\t Last Name \t\t Social Security Number \t\t Pay Type \t\t Job Type")
                 for i in range(len(employees)):
+                    print(employees[i])
                     print(employees[i][0], "\t\t", employees[i][1], "\t\t", employees[i][2],employees[i][3], "\t\t", employees[i][4], "\t\t", employees[i][5])
             else:
                 myCursor.execute("select * from hremployeeview")
@@ -480,6 +473,7 @@ class Connection:
             myCursor=conn.cursor()
             sql="create or replace view total_revenue as select employeeid, customerid, sum(saleprice) from orders group by employeeid, customerid;"
             myCursor.execute(sql)
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -487,8 +481,9 @@ class Connection:
         #Customer model bought and quantity to make prediction and understand trending
         try:
             myCursor=conn.cursor()
-            sql= "create view customer_prediction as select orders.customerid, inventory.modelname, count(orders) from orders, inventory group by customerid, modelname;"
+            sql= "create or replace view customer_prediction as select orders.customerid, inventory.modelname, count(orders) from orders, inventory group by customerid, modelname;"
             myCursor.execute(sql)
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -496,39 +491,37 @@ class Connection:
         #For each order, the associated parts and available inventory
         try:
             myCursor=conn.cursor()
-            sql="create or replace view parts as select orders.ordernumber, inventory.modelname, inventory.quantity from orders inner join inventory on orders.inventoryid=inventory.inventoryid;"
+            sql="create or replace view parts as select orders.ordernumber, inventory.modelname, inventory.quantity from orders, inventory;"
             myCursor.execute(sql)
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
     def viewExpenseReport(self, conn): #Neeeds testing
         #Expense report, employee showing salary, bonus expense and part cost
-        print("before the try?")
         try:
             myCursor=conn.cursor()
             modelCostQuery="select sum(costmodel) from model"
-            salaryCostQuery="select sum(employee.salary) from employee where employee.paytype= 'salary'"
-            hourlyCostQuery="select sum(employee.salary * 40 * 52) from employee where employee.paytype= 'hourly'"
+            salaryCostQuery="select sum(employee.salary) from employee where employee.paytype= 'Salary'"
+            hourlyCostQuery="select sum(employee.salary * 40 * 52) from employee where employee.paytype= 'Hourly'"
 
-            print('in the try')
             myCursor.execute(modelCostQuery)
-            modelCost=list(myCursor.fetchone())[0]
-            print("cost for models is: $%s" %(modelCost))
-         
+            modelCost=myCursor.fetchall()
+            print("cost for models is: ")
+            print(modelCost)
 
             myCursor.execute(salaryCostQuery)
-            salaryCost=list(myCursor.fetchone())[0]
-            print("cost for the salary employee is: $%s" % (salaryCost))
-            
+            salaryCost=myCursor.fetchall()
+            print("cost for the salary employee is: ")
+            print(salaryCost)
 
             myCursor.execute(hourlyCostQuery)
-            hourlyCost=list(myCursor.fetchone())[0]
-            print("cost for the hourly employee's working 40 hour workweeks 52 weeks a year: $%s" % (hourlyCost))
-            print("Total Expense for the year: $%s" %(int(modelCost)+int(salaryCost)+int(hourlyCost)))
-
-        except (Exception, KeyboardInterrupt):     
+            hourlyCost=myCursor.fetchall()
+            print("cost for the hourly employee's working 40 hour workweeks 52 weeks a year: ")
+            print(hourlyCost)
+            return
+        except KeyboardInterrupt:     
             self.loginOut(conn)
-            print("Error")
 
     def viewTotalRevenue(self,conn): #Neeeds testing
         try:
@@ -537,18 +530,21 @@ class Connection:
             myCursor.execute(sql)
             totalRev=myCursor.fetchall()
             print(totalRev)
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
-    def viewCustomerPrediction(self,conn): #Neeeds testing
+    def viewCustomerPrediction(self,conn): 
         try:
             myCursor = conn.cursor()
             sql="select * from customer_prediction"
             myCursor.execute(sql)
-            custPred=myCursor.fetchall()
-            print(custPred)
+            totalRev=myCursor.fetchall()
+            print(totalRev)
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
+
 
     def viewOrderInventory(self,conn): #Neeeds testing
         try:
@@ -557,8 +553,20 @@ class Connection:
             myCursor.execute(sql)
             parts=myCursor.fetchall()
             print(parts)
+            return
         except KeyboardInterrupt:     
             self.loginOut(conn)
+
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 
 
     #Table function calls
@@ -571,34 +579,43 @@ class Connection:
             tblNames = myCursor.fetchall() #list of all tables and views
             while invalid == True:
                 tblName = input("Please enter the name of the table: ")
-                if tblName in tblNames:
-                    invalid = False
-                else:
-                    tryAgain = input("Table doesn't exist. Would you like to try another name? (Y/N)")
-                    if tryAgain != "Y":
-                        return
-
+                for i in range(len(tblNames)):
+                    tables= tblNames[i][0]
+                    if tblName == tables:
+                        invalid = False
+                        correctTable = str(tables)
+                    else:
+                        continue
+            print(correctTable)
             #to list all columns in that table
-            myCursor.execute("select column_name from information_schema.columns where table_schema = 'public'\
-                            and table_name = %s", (tblName))
+            myCursor.execute("select column_name from information_schema.columns where table_schema = 'public' and table_name = %s", (correctTable,))
             cols = myCursor.fetchall() #list of tuples i.e. [(employeeId), (firstName)...(salary)]
 
             #to do an operation on columns of table
-            option = input("Please select an option (number):\n1. Rename column\n2. Add coulumn\n3. Delete column")
+            print("Please select an option (number):\n1. Rename column\n2. Add coulumn\n3. Delete column")
+            option = input("Please select and option:")
+            invalid = True
             while invalid == True:
                 if option == "1":
                     invalid = False
                     invalid1 = True
                     while invalid1 == True:
                         col = input("Please enter the name of the column you want to rename: ")
-                        if col in cols:
-                            invalid1 = False
-                        else:
+                        for i in range(len(cols)):
+                            columns = cols[i][0]
+                            if col == columns:
+                                invalid1 = False
+                                correctCol = str(columns)
+                            else:
+                                continue
+                        if invalid1 == True:
+                            print(correctCol)
                             tryAgain = input("Column doesn't exist. Would you like to try another name? (Y/N)")
                             if tryAgain != "Y":
                                 return
                     newCol = input("Please enter the new column name: ")
-                    myCursor.execute("alter table %s rename column %s to %s", (tblName, col, newCol))
+                    myCursor.execute("alter table %s rename column %s to %s", (AsIs(correctTable), AsIs(correctCol), AsIs(newCol)))
+                    conn.commit()
                 elif option == "2":
                     invalid = False
                     invalid1 = True
@@ -610,7 +627,8 @@ class Connection:
                             tryAgain = input("Column already exists. Would you like to try another name? (Y/N)")
                             if tryAgain != "Y":
                                 return
-                    prompt = input("Please choose the data type (number):\n1. String\n2. Int")
+                    print("Please choose the data type (number):\n1. String\n2. Int")
+                    prompt = input("Please select and option:")
                     if prompt == "1":
                         colType = 'varchar(50)'
                     elif prompt == "2":
@@ -666,31 +684,31 @@ class Connection:
             valid_input = False
             while valid_input == False:
                 print("Update Inventory Menu:")
-                menuSelect = input("1. Update Quantity \n2. Remove Item\n: ")
-                try:
-                    if menuSelect == "1":
-                        valid_input = True
-                        inventoryid = input("What inventory ID would you like to update: ")
-                        myCursor.execute("select inventoryid from inventory where inventoryid = %s",inventoryid)
+                print("1. Update Quantity \n 2. Remove Item")
+                menuSelect = input("Please select and option:")
+                if menuSelect == "1":
+                    valid_input = True
+                    inventoryid = input("What inventory ID would you like to update: ")
+                    invenid = myCursor.execute("slect inventoryid from inventory where inventoryid = %s",inventoryid)
+                    inventvals = myCursor.fetchone()[0]
+                    if inventoryid == inventvals:
                         newQuantity = input("What is the updated quantity: ")
-                        myCursor.execute("update inventory set quantity = %s where inventoryid = %s", (newQuantity, inventoryid))
+                        myCursor.execute("update inventory set quantity = newQuantity where inventoryid = %s", inventoryid)
                         conn.commit()
-                        print("Quantity updated successfully")
                         return
-                    elif menuSelect == "2":
-                        valid_input = True
-                        inventoryid = input("What inventory ID would you like to remove: ")
-                        myCursor.execute("select inventoryid from inventory where inventoryid = %s",inventoryid)
-                        myCursor.execute("delete from inventory where inventoryid = %s", (inventoryid))
+                elif menuSelect == "2":
+                    valid_input = True
+                    inventoryid = input("What inventory ID would you like to remove: ")
+                    invenid = myCursor.execute("select inventoryid from inventory where inventoryid = %s",inventoryid)
+                    inventvals = myCursor.fetchone()[0]
+                    if inventoryid == inventvals:
+                        myCursor.execute("delete from inventory where inventoryid = inventoryid")
                         conn.commit()
-                        print("Inventory updated successfully")
                         return
-                    else:
-                        tryAgain = input("Invalid input. Would you like to try again? (Y/N)")
-                        if tryAgain != "Y":
-                            return
-                except:
-                    print("error")
+                else:
+                    tryAgain = input("Invalid input. Would you like to try again? (Y/N)")
+                    if tryAgain != "Y":
+                        return
         except KeyboardInterrupt:     
             self.loginOut(conn)
 
@@ -725,12 +743,12 @@ class Connection:
                 if checkInventory > 0:
                     myCursor.execute("select saleprice from inventory where inventoryid = %s",inventoryId)
                     saleprice = myCursor.fetchone()[0]
-                    myCursor.execute('''Insert into orders (ordernumber,customerid,employeeid,saleprice,inventoryid) values (%s,%s,%s,%s,%s)''', (ordernumber, customerid, employeeid, saleprice, inventoryId))
+                    myCursor.execute("Insert into orders (ordernumber,customerid,employeeid,saleprice,inventoryid) values (%s,%s,%s,%s,%s)", (ordernumber, customerid, employeeid, saleprice, inventoryId))
                     conn.commit()
                     myCursor.execute("Update inventory set quantity = %s where inventoryid = %s",
                                     (checkInventory-1,inventoryId))
                     conn.commit()
-                    print("Order number %s successfully placed" % (ordernumber))
+                    print("Order number %s successfully placed" % (inventoryId))
             return
         except KeyboardInterrupt:     
             self.loginOut(conn)
